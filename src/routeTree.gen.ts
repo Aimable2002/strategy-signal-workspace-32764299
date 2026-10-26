@@ -10,10 +10,13 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AccountRouteImport } from './routes/account'
+import { Route as BillingRouteImport } from './routes/billing'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as LibraryRouteImport } from './routes/library'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
+import { Route as OrdersRouteImport } from './routes/orders'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SignupRouteImport } from './routes/signup'
@@ -26,11 +29,22 @@ import { Route as CheckoutSuccessRouteImport } from './routes/checkout.success'
 import { Route as MarketplaceIndexRouteImport } from './routes/marketplace.index'
 import { Route as MarketplaceIdRouteImport } from './routes/marketplace.$id'
 import { Route as SellIndexRouteImport } from './routes/sell.index'
+import { Route as SellPayoutsRouteImport } from './routes/sell.payouts'
 import { Route as SellPublishRouteImport } from './routes/sell.publish'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AccountRoute = AccountRouteImport.update({
+  id: '/account',
+  path: '/account',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BillingRoute = BillingRouteImport.update({
+  id: '/billing',
+  path: '/billing',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
@@ -51,6 +65,11 @@ const LoginRoute = LoginRouteImport.update({
 const OnboardingRoute = OnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrdersRoute = OrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PricingRoute = PricingRouteImport.update({
@@ -113,6 +132,11 @@ const SellIndexRoute = SellIndexRouteImport.update({
   path: '/sell/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SellPayoutsRoute = SellPayoutsRouteImport.update({
+  id: '/sell/payouts',
+  path: '/sell/payouts',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SellPublishRoute = SellPublishRouteImport.update({
   id: '/sell/publish',
   path: '/sell/publish',
@@ -121,10 +145,13 @@ const SellPublishRoute = SellPublishRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/account': typeof AccountRoute
+  '/billing': typeof BillingRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/library': typeof LibraryRoute
   '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
+  '/orders': typeof OrdersRoute
   '/pricing': typeof PricingRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
@@ -135,16 +162,20 @@ export interface FileRoutesByFullPath {
   '/checkout/$id': typeof CheckoutIdRoute
   '/checkout/success': typeof CheckoutSuccessRoute
   '/marketplace/$id': typeof MarketplaceIdRoute
+  '/sell/payouts': typeof SellPayoutsRoute
   '/sell/publish': typeof SellPublishRoute
   '/marketplace/': typeof MarketplaceIndexRoute
   '/sell/': typeof SellIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/account': typeof AccountRoute
+  '/billing': typeof BillingRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/library': typeof LibraryRoute
   '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
+  '/orders': typeof OrdersRoute
   '/pricing': typeof PricingRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
@@ -155,6 +186,7 @@ export interface FileRoutesByTo {
   '/checkout/$id': typeof CheckoutIdRoute
   '/checkout/success': typeof CheckoutSuccessRoute
   '/marketplace/$id': typeof MarketplaceIdRoute
+  '/sell/payouts': typeof SellPayoutsRoute
   '/sell/publish': typeof SellPublishRoute
   '/marketplace': typeof MarketplaceIndexRoute
   '/sell': typeof SellIndexRoute
@@ -162,10 +194,13 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/account': typeof AccountRoute
+  '/billing': typeof BillingRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/library': typeof LibraryRoute
   '/login': typeof LoginRoute
   '/onboarding': typeof OnboardingRoute
+  '/orders': typeof OrdersRoute
   '/pricing': typeof PricingRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
@@ -176,6 +211,7 @@ export interface FileRoutesById {
   '/checkout/$id': typeof CheckoutIdRoute
   '/checkout/success': typeof CheckoutSuccessRoute
   '/marketplace/$id': typeof MarketplaceIdRoute
+  '/sell/payouts': typeof SellPayoutsRoute
   '/sell/publish': typeof SellPublishRoute
   '/marketplace/': typeof MarketplaceIndexRoute
   '/sell/': typeof SellIndexRoute
@@ -184,10 +220,13 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/account'
+    | '/billing'
     | '/forgot-password'
     | '/library'
     | '/login'
     | '/onboarding'
+    | '/orders'
     | '/pricing'
     | '/reset-password'
     | '/signup'
@@ -198,16 +237,20 @@ export interface FileRouteTypes {
     | '/checkout/$id'
     | '/checkout/success'
     | '/marketplace/$id'
+    | '/sell/payouts'
     | '/sell/publish'
     | '/marketplace/'
     | '/sell/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/account'
+    | '/billing'
     | '/forgot-password'
     | '/library'
     | '/login'
     | '/onboarding'
+    | '/orders'
     | '/pricing'
     | '/reset-password'
     | '/signup'
@@ -218,16 +261,20 @@ export interface FileRouteTypes {
     | '/checkout/$id'
     | '/checkout/success'
     | '/marketplace/$id'
+    | '/sell/payouts'
     | '/sell/publish'
     | '/marketplace'
     | '/sell'
   id:
     | '__root__'
     | '/'
+    | '/account'
+    | '/billing'
     | '/forgot-password'
     | '/library'
     | '/login'
     | '/onboarding'
+    | '/orders'
     | '/pricing'
     | '/reset-password'
     | '/signup'
@@ -238,6 +285,7 @@ export interface FileRouteTypes {
     | '/checkout/$id'
     | '/checkout/success'
     | '/marketplace/$id'
+    | '/sell/payouts'
     | '/sell/publish'
     | '/marketplace/'
     | '/sell/'
@@ -245,10 +293,13 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AccountRoute: typeof AccountRoute
+  BillingRoute: typeof BillingRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   LibraryRoute: typeof LibraryRoute
   LoginRoute: typeof LoginRoute
   OnboardingRoute: typeof OnboardingRoute
+  OrdersRoute: typeof OrdersRoute
   PricingRoute: typeof PricingRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SignupRoute: typeof SignupRoute
@@ -259,6 +310,7 @@ export interface RootRouteChildren {
   CheckoutIdRoute: typeof CheckoutIdRoute
   CheckoutSuccessRoute: typeof CheckoutSuccessRoute
   MarketplaceIdRoute: typeof MarketplaceIdRoute
+  SellPayoutsRoute: typeof SellPayoutsRoute
   SellPublishRoute: typeof SellPublishRoute
   MarketplaceIndexRoute: typeof MarketplaceIndexRoute
   SellIndexRoute: typeof SellIndexRoute
@@ -271,6 +323,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/account': {
+      id: '/account'
+      path: '/account'
+      fullPath: '/account'
+      preLoaderRoute: typeof AccountRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/billing': {
+      id: '/billing'
+      path: '/billing'
+      fullPath: '/billing'
+      preLoaderRoute: typeof BillingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/forgot-password': {
@@ -299,6 +365,13 @@ declare module '@tanstack/react-router' {
       path: '/onboarding'
       fullPath: '/onboarding'
       preLoaderRoute: typeof OnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/orders': {
+      id: '/orders'
+      path: '/orders'
+      fullPath: '/orders'
+      preLoaderRoute: typeof OrdersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/pricing': {
@@ -385,6 +458,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SellIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sell/payouts': {
+      id: '/sell/payouts'
+      path: '/sell/payouts'
+      fullPath: '/sell/payouts'
+      preLoaderRoute: typeof SellPayoutsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sell/publish': {
       id: '/sell/publish'
       path: '/sell/publish'
@@ -397,10 +477,13 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AccountRoute: AccountRoute,
+  BillingRoute: BillingRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
   LibraryRoute: LibraryRoute,
   LoginRoute: LoginRoute,
   OnboardingRoute: OnboardingRoute,
+  OrdersRoute: OrdersRoute,
   PricingRoute: PricingRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SignupRoute: SignupRoute,
@@ -411,6 +494,7 @@ const rootRouteChildren: RootRouteChildren = {
   CheckoutIdRoute: CheckoutIdRoute,
   CheckoutSuccessRoute: CheckoutSuccessRoute,
   MarketplaceIdRoute: MarketplaceIdRoute,
+  SellPayoutsRoute: SellPayoutsRoute,
   SellPublishRoute: SellPublishRoute,
   MarketplaceIndexRoute: MarketplaceIndexRoute,
   SellIndexRoute: SellIndexRoute,

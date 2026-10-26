@@ -119,7 +119,7 @@ import {
   builders as mBuilders,
   dashboard as mDashboard,
   listings as mListings,
-  makeEquity,
+  makeCurve,
   reviewQueue as mReviewQueue,
   reviews as mReviews,
   workspaceStrategiesForPublish,
@@ -200,7 +200,7 @@ export async function runTrialBacktest(listingId: string, settings: TrialSetting
     totalTrades: Math.round(m.totalTrades * (0.8 + factor / 5)),
     sharpe: +(m.sharpe * factor).toFixed(2),
   };
-  const result: TrialResult = { id: crypto.randomUUID(), listingId, date: new Date().toISOString().slice(0, 10), settings, metrics, equity: makeEquity(100 + n, settings.deposit, metrics.netProfit, metrics.drawdown) };
+  const result: TrialResult = { id: crypto.randomUUID(), listingId, date: new Date().toISOString().slice(0, 10), settings, metrics, equity: makeCurve(100 + n, settings.deposit, metrics.netProfit, metrics.drawdown) };
   trials = [...trials, result];
   return clone(result);
 }

@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
-import { Play, Square, Trash2, LineChart, Info, PanelLeft } from "lucide-react";
+import { Play, Square, Trash2, Info, PanelLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import type { WorkspaceStatus } from "@/mockData";
 import { cn } from "@/lib/utils";

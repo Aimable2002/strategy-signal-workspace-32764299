@@ -164,6 +164,7 @@ export const workspaceStrategiesForPublish = [
 export const dashboard = {
   revenue: 18420,
   unitsSold: 147,
+  infraSpent: 15.42,
   trialRunsThisMonth: 386,
   conversion: 12.4,
   revenueSeries: ["May", "Jun", "Jul", "Aug", "Sep", "Oct"].map((m, i) => ({ month: m, revenue: [1840, 2410, 2980, 3120, 3650, 4420][i] })),

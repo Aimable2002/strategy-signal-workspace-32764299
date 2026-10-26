@@ -8,6 +8,10 @@ import { FilesTab, ResultsTab, RunsTab, SettingsTab, StrategyTab, TerminalTab } 
 import * as api from "@/services/api";
 import type { BacktestRun, Message, Strategy, WorkspaceStatus } from "@/mockData";
 import { cn } from "@/lib/utils";
+import { Link } from "@tanstack/react-router";
+import { AlertTriangle, Wallet, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useDevState } from "@/lib/devState";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -35,15 +39,22 @@ function Workspace() {
   const [runs, setRuns] = useState<BacktestRun[] | null>(null);
   const [progress, setProgress] = useState<number | null>(null);
   const [engine, setEngine] = useState<Awaited<ReturnType<typeof api.getEngineStatus>> | null>(null);
-  const [usage, setUsage] = useState({ used: 0, limit: 40 });
+  const [credit, setCredit] = useState({ balance: 0, hourly: 0.12 });
+  const [bannerDismissed, setBannerDismissed] = useState(false);
+  const dev = useDevState();
   const [tab, setTab] = useState("results");
 
   useEffect(() => {
     api.getWorkspaceStatus().then((w) => { setStatus(w.status); setStartedAt(w.startedAt); });
     api.getStrategies().then(setStrategies);
     api.getEngineStatus().then(setEngine);
-    api.getUsage().then(setUsage);
   }, []);
+  useEffect(() => {
+    const load = () => api.getCreditBalance().then(setCredit);
+    load();
+    window.addEventListener("credits-changed", load);
+    return () => window.removeEventListener("credits-changed", load);
+  }, [dev.credit]);
   useEffect(() => {
     setMessages(null);
     api.getMessages(activeId).then(setMessages);
@@ -78,6 +89,17 @@ function Workspace() {
     );
   }
 
+  if (credit.balance <= 0 && dev.credit === "zero") {
+    return (
+      <div className="flex h-[calc(100vh-3rem)] flex-col items-center justify-center gap-3 px-6 text-center">
+        <span className="flex h-12 w-12 items-center justify-center rounded-full bg-loss/10 text-loss"><Wallet className="h-6 w-6" /></span>
+        <h1 className="text-xl font-semibold">Out of credits</h1>
+        <p className="max-w-md text-sm text-muted-foreground">Your workspace has been stopped. Your files are kept for 30 days. Add credits to resume where you left off.</p>
+        <Button asChild><Link to="/billing">Add credits to resume</Link></Button>
+      </div>
+    );
+  }
+
   const chat = <ChatPanel messages={messages} pending={pending} onSend={send} onDownload={(t) => download("v3", t)} disabled={stopped} />;
   const panels = {
     results: <ResultsTab run={latest} progress={progress} />,
@@ -91,7 +113,14 @@ function Workspace() {
 
   return (
     <div className="flex h-[calc(100vh-3rem)] flex-col overflow-hidden">
-      <TopBar status={status} startedAt={startedAt} onStart={start} onStop={() => setStatus("stopped")} onDelete={() => setDeleted(true)} usage={usage} onToggleSidebar={() => setSidebarOpen((o) => !o)} />
+      <TopBar status={status} startedAt={startedAt} onStart={start} onStop={() => setStatus("stopped")} onDelete={() => setDeleted(true)} credit={credit} onToggleSidebar={() => setSidebarOpen((o) => !o)} />
+      {credit.balance < 2 && !bannerDismissed && (
+        <div className="flex items-center gap-2 border-b border-warning/40 bg-warning/10 px-4 py-1.5 text-xs text-warning">
+          <AlertTriangle className="h-3.5 w-3.5" /> Your balance is ${credit.balance.toFixed(2)}. Your workspace will stop when credits run out.
+          <Button size="sm" variant="outline" className="ml-auto h-6 text-xs" asChild><Link to="/billing">Add credits</Link></Button>
+          <button aria-label="Dismiss" onClick={() => setBannerDismissed(true)}><X className="h-3.5 w-3.5" /></button>
+        </div>
+      )}
       {stopped && (
         <div className="border-b bg-muted px-4 py-1.5 text-center text-xs text-muted-foreground">
           {status === "starting" ? "Starting your workspace…" : "Workspace is stopped. Start it to continue working with the agent."}

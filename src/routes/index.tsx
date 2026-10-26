@@ -70,7 +70,7 @@ function Workspace() {
 
   if (deleted) {
     return (
-      <div className="flex h-screen flex-col items-center justify-center gap-2 text-center">
+      <div className="flex h-[calc(100vh-3rem)] flex-col items-center justify-center gap-2 text-center">
         <h1 className="text-lg font-semibold">Workspace deleted</h1>
         <p className="text-sm text-muted-foreground">Your workspace and its files were removed.</p>
         <button className="mt-3 text-sm text-primary underline" onClick={() => { setDeleted(false); start(); }}>Create a new workspace</button>
@@ -90,7 +90,7 @@ function Workspace() {
   const labels: Record<string, string> = { results: "Results", runs: "Runs", strategy: "Strategy", files: "Files", terminal: "Terminal", settings: "Backtest settings" };
 
   return (
-    <div className="flex h-screen flex-col overflow-hidden">
+    <div className="flex h-[calc(100vh-3rem)] flex-col overflow-hidden">
       <TopBar status={status} startedAt={startedAt} onStart={start} onStop={() => setStatus("stopped")} onDelete={() => setDeleted(true)} usage={usage} onToggleSidebar={() => setSidebarOpen((o) => !o)} />
       {stopped && (
         <div className="border-b bg-muted px-4 py-1.5 text-center text-xs text-muted-foreground">

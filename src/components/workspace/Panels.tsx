@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { Area, AreaChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { AlertTriangle, CheckCircle2, ChevronDown, Download, FileArchive, FileBox, FileCode2, FileText, Folder, Loader2, Play, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -175,6 +176,7 @@ export function StrategyTab({ strategyId, runs, onDownload }: { strategyId: stri
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-2">
         <h3 className="truncate text-sm font-semibold">{files?.name ?? "EMA crossover EURUSD"}</h3>
+        <Button size="sm" className="ml-auto h-8" asChild><Link to="/sell/publish" search={{ strategy: strategyId, version }}>Publish to marketplace</Link></Button>
         <Select value={version} onValueChange={setVersion}>
           <SelectTrigger className="h-8 w-20"><SelectValue /></SelectTrigger>
           <SelectContent>{versions.map((v) => <SelectItem key={v} value={v}>{v}</SelectItem>)}</SelectContent>

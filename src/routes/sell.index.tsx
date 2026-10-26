@@ -17,7 +17,7 @@ export const Route = createFileRoute("/sell/")({
   component: Dashboard,
 });
 
-export const statusClass: Record<ListingStatus, string> = {
+const statusClass: Record<ListingStatus, string> = {
   Live: "border-profit/40 text-profit",
   "In review": "border-warning/40 text-warning",
   Paused: "border-border text-muted-foreground",

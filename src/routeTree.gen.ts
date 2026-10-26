@@ -10,33 +10,154 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as LibraryRouteImport } from './routes/library'
+import { Route as AdminReviewRouteImport } from './routes/admin.review'
+import { Route as BuildersIdRouteImport } from './routes/builders.$id'
+import { Route as CheckoutIdRouteImport } from './routes/checkout.$id'
+import { Route as CheckoutSuccessRouteImport } from './routes/checkout.success'
+import { Route as MarketplaceIndexRouteImport } from './routes/marketplace.index'
+import { Route as MarketplaceIdRouteImport } from './routes/marketplace.$id'
+import { Route as SellIndexRouteImport } from './routes/sell.index'
+import { Route as SellPublishRouteImport } from './routes/sell.publish'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LibraryRoute = LibraryRouteImport.update({
+  id: '/library',
+  path: '/library',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminReviewRoute = AdminReviewRouteImport.update({
+  id: '/admin/review',
+  path: '/admin/review',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BuildersIdRoute = BuildersIdRouteImport.update({
+  id: '/builders/$id',
+  path: '/builders/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CheckoutIdRoute = CheckoutIdRouteImport.update({
+  id: '/checkout/$id',
+  path: '/checkout/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CheckoutSuccessRoute = CheckoutSuccessRouteImport.update({
+  id: '/checkout/success',
+  path: '/checkout/success',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MarketplaceIndexRoute = MarketplaceIndexRouteImport.update({
+  id: '/marketplace/',
+  path: '/marketplace/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MarketplaceIdRoute = MarketplaceIdRouteImport.update({
+  id: '/marketplace/$id',
+  path: '/marketplace/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SellIndexRoute = SellIndexRouteImport.update({
+  id: '/sell/',
+  path: '/sell/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SellPublishRoute = SellPublishRouteImport.update({
+  id: '/sell/publish',
+  path: '/sell/publish',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/library': typeof LibraryRoute
+  '/admin/review': typeof AdminReviewRoute
+  '/builders/$id': typeof BuildersIdRoute
+  '/checkout/$id': typeof CheckoutIdRoute
+  '/checkout/success': typeof CheckoutSuccessRoute
+  '/marketplace/$id': typeof MarketplaceIdRoute
+  '/sell/publish': typeof SellPublishRoute
+  '/marketplace/': typeof MarketplaceIndexRoute
+  '/sell/': typeof SellIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/library': typeof LibraryRoute
+  '/admin/review': typeof AdminReviewRoute
+  '/builders/$id': typeof BuildersIdRoute
+  '/checkout/$id': typeof CheckoutIdRoute
+  '/checkout/success': typeof CheckoutSuccessRoute
+  '/marketplace/$id': typeof MarketplaceIdRoute
+  '/sell/publish': typeof SellPublishRoute
+  '/marketplace': typeof MarketplaceIndexRoute
+  '/sell': typeof SellIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/library': typeof LibraryRoute
+  '/admin/review': typeof AdminReviewRoute
+  '/builders/$id': typeof BuildersIdRoute
+  '/checkout/$id': typeof CheckoutIdRoute
+  '/checkout/success': typeof CheckoutSuccessRoute
+  '/marketplace/$id': typeof MarketplaceIdRoute
+  '/sell/publish': typeof SellPublishRoute
+  '/marketplace/': typeof MarketplaceIndexRoute
+  '/sell/': typeof SellIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/library'
+    | '/admin/review'
+    | '/builders/$id'
+    | '/checkout/$id'
+    | '/checkout/success'
+    | '/marketplace/$id'
+    | '/sell/publish'
+    | '/marketplace/'
+    | '/sell/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/library'
+    | '/admin/review'
+    | '/builders/$id'
+    | '/checkout/$id'
+    | '/checkout/success'
+    | '/marketplace/$id'
+    | '/sell/publish'
+    | '/marketplace'
+    | '/sell'
+  id:
+    | '__root__'
+    | '/'
+    | '/library'
+    | '/admin/review'
+    | '/builders/$id'
+    | '/checkout/$id'
+    | '/checkout/success'
+    | '/marketplace/$id'
+    | '/sell/publish'
+    | '/marketplace/'
+    | '/sell/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  LibraryRoute: typeof LibraryRoute
+  AdminReviewRoute: typeof AdminReviewRoute
+  BuildersIdRoute: typeof BuildersIdRoute
+  CheckoutIdRoute: typeof CheckoutIdRoute
+  CheckoutSuccessRoute: typeof CheckoutSuccessRoute
+  MarketplaceIdRoute: typeof MarketplaceIdRoute
+  SellPublishRoute: typeof SellPublishRoute
+  MarketplaceIndexRoute: typeof MarketplaceIndexRoute
+  SellIndexRoute: typeof SellIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +169,83 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/library': {
+      id: '/library'
+      path: '/library'
+      fullPath: '/library'
+      preLoaderRoute: typeof LibraryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/review': {
+      id: '/admin/review'
+      path: '/admin/review'
+      fullPath: '/admin/review'
+      preLoaderRoute: typeof AdminReviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/builders/$id': {
+      id: '/builders/$id'
+      path: '/builders/$id'
+      fullPath: '/builders/$id'
+      preLoaderRoute: typeof BuildersIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/checkout/$id': {
+      id: '/checkout/$id'
+      path: '/checkout/$id'
+      fullPath: '/checkout/$id'
+      preLoaderRoute: typeof CheckoutIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/checkout/success': {
+      id: '/checkout/success'
+      path: '/checkout/success'
+      fullPath: '/checkout/success'
+      preLoaderRoute: typeof CheckoutSuccessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/marketplace/': {
+      id: '/marketplace/'
+      path: '/marketplace'
+      fullPath: '/marketplace/'
+      preLoaderRoute: typeof MarketplaceIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/marketplace/$id': {
+      id: '/marketplace/$id'
+      path: '/marketplace/$id'
+      fullPath: '/marketplace/$id'
+      preLoaderRoute: typeof MarketplaceIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sell/': {
+      id: '/sell/'
+      path: '/sell'
+      fullPath: '/sell/'
+      preLoaderRoute: typeof SellIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sell/publish': {
+      id: '/sell/publish'
+      path: '/sell/publish'
+      fullPath: '/sell/publish'
+      preLoaderRoute: typeof SellPublishRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  LibraryRoute: LibraryRoute,
+  AdminReviewRoute: AdminReviewRoute,
+  BuildersIdRoute: BuildersIdRoute,
+  CheckoutIdRoute: CheckoutIdRoute,
+  CheckoutSuccessRoute: CheckoutSuccessRoute,
+  MarketplaceIdRoute: MarketplaceIdRoute,
+  SellPublishRoute: SellPublishRoute,
+  MarketplaceIndexRoute: MarketplaceIndexRoute,
+  SellIndexRoute: SellIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

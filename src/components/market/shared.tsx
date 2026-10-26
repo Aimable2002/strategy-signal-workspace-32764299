@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { Builder, EquityPoint, Listing, Metrics } from "@/mockData";
 import { cn } from "@/lib/utils";
+import { FavoriteButton } from "./extras";
 
 export const money = (n: number, d = 0) => `${n < 0 ? "-" : ""}$${Math.abs(n).toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d })}`;
 
@@ -142,7 +143,7 @@ export function ListingCard({ listing, preview }: { listing: ListingWithBuilder;
     <div className="flex flex-col rounded-lg border bg-card p-4 transition-colors hover:border-primary/40">
       <div className="flex items-start justify-between gap-2">
         <h3 className="font-semibold leading-tight">{listing.title}</h3>
-        <span className="font-mono text-sm font-semibold">{money(listing.price)}</span>
+        <span className="flex items-center gap-1">{!preview && <FavoriteButton listingId={listing.id} />}<span className="font-mono text-sm font-semibold">{money(listing.price)}</span></span>
       </div>
       <div className="mt-1.5 flex items-center gap-2 text-xs text-muted-foreground">
         <BuilderAvatar builder={listing.builder} /> {listing.builder.name}

@@ -34,8 +34,8 @@ function Dashboard() {
     <Page title="Builder dashboard" actions={<Button asChild><Link to="/sell/publish" search={{}}><Plus className="h-4 w-4" /> Publish a strategy</Link></Button>}>
       {error ? <ErrorState message={error} onRetry={load} /> : !d ? <div className="space-y-4"><Skeleton className="h-24" /><Skeleton className="h-72" /></div> : (
         <div className="space-y-6">
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {[["Total revenue", money(d.revenue)], ["Units sold", String(d.unitsSold)], ["Trial runs this month", String(d.trialRunsThisMonth)], ["Trial-to-sale conversion", `${d.conversion}%`]].map(([l, v]) => (
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+            {[["Sales earnings (after processing fees)", money(d.revenue)], ["Infrastructure spent this month", money(d.infraSpent, 2)], ["Units sold", String(d.unitsSold)], ["Trial runs this month", String(d.trialRunsThisMonth)], ["Trial-to-sale conversion", `${d.conversion}%`]].map(([l, v]) => (
               <div key={l} className="rounded-lg border bg-card p-4"><div className="text-xs text-muted-foreground">{l}</div><div className="mt-1 font-mono text-xl font-semibold">{v}</div></div>
             ))}
           </div>
@@ -63,7 +63,7 @@ function Dashboard() {
             ))}
             <div className="rounded-lg border">
               <Table>
-                <TableHeader><TableRow><TableHead>Strategy</TableHead><TableHead>Status</TableHead><TableHead className="text-right">Price</TableHead><TableHead className="text-right">Sales</TableHead></TableRow></TableHeader>
+                <TableHeader><TableRow><TableHead>Strategy</TableHead><TableHead>Status</TableHead><TableHead className="text-right">Price</TableHead><TableHead className="text-right">Sales</TableHead><TableHead /></TableRow></TableHeader>
                 <TableBody>
                   {d.listings.map((l) => (
                     <TableRow key={l.id}>
@@ -71,6 +71,12 @@ function Dashboard() {
                       <TableCell><Badge variant="outline" className={cn(statusClass[l.status])}>{l.status}</Badge></TableCell>
                       <TableCell className="text-right font-mono">{l.price ? money(l.price) : "—"}</TableCell>
                       <TableCell className="text-right font-mono">{l.sales}</TableCell>
+                      <TableCell className="text-right">{l.id.startsWith("l") && (
+                        <span className="flex justify-end gap-1">
+                          <Button size="sm" variant="ghost" className="h-7" asChild><Link to="/sell/listings/$id/edit" params={{ id: l.id }}>Edit</Link></Button>
+                          <Button size="sm" variant="ghost" className="h-7" asChild><Link to="/sell/listings/$id/analytics" params={{ id: l.id }}>Analytics</Link></Button>
+                        </span>
+                      )}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -80,7 +86,7 @@ function Dashboard() {
           <section className="rounded-lg border bg-card p-4">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div><h2 className="font-semibold">Payouts</h2><p className="text-xs text-muted-foreground">Available balance</p><div className="font-mono text-2xl font-semibold">{money(d.payouts.balance, 2)}</div></div>
-              <Button variant="outline">Connect payout account</Button>
+              <span className="flex gap-2"><Button variant="outline" asChild><Link to="/sell/disputes">Disputes</Link></Button><Button variant="outline" asChild><Link to="/sell/payouts">Connect payout account</Link></Button></span>
             </div>
             <Table className="mt-4">
               <TableHeader><TableRow><TableHead>Date</TableHead><TableHead>Status</TableHead><TableHead className="text-right">Amount</TableHead></TableRow></TableHeader>

@@ -312,7 +312,7 @@ export function SettingsTab({ onRun, progress, disabled }: { onRun: () => void; 
         <div className="col-span-2">{field("Modeling quality", sel("Every tick", ["Every tick", "1-minute OHLC", "Open prices only"]))}</div>
       </div>
       <Button className="w-full" onClick={onRun} disabled={progress !== null || disabled}>
-        {progress !== null ? <Loader2 className="h-4 w-4 animate-spin" /> : <Play className="h-4 w-4" />} Run backtest
+        {progress !== null ? <Loader2 className="h-4 w-4 animate-spin" /> : <Play className="h-4 w-4" />} Run backtest · ~$0.02 from credits
       </Button>
       <BacktestProgress progress={progress} />
       <p className="text-[11px] text-muted-foreground">Backtests are historical simulations. No real trades are placed.</p>

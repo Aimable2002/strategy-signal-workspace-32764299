@@ -4,6 +4,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { BuilderAvatar, CardGridSkeleton, EmptyState, ErrorState, ListingCard, Page, Stars } from "@/components/market/shared";
 import * as api from "@/services/api";
 import { meta } from "@/lib/meta";
+import { WhatsAppContact } from "@/components/market/extras";
 
 export const Route = createFileRoute("/builders/$id")({
   head: () => meta("Builder profile · Tickforge Marketplace", "Strategies, sales and ratings from this strategy builder."),
@@ -27,6 +28,7 @@ function Profile() {
         <div className="min-w-0 flex-1">
           <h1 className="text-xl font-semibold">{b.name}</h1>
           <p className="mt-1 max-w-xl text-sm text-muted-foreground">{b.bio}</p>
+          <div className="mt-3 max-w-sm"><WhatsAppContact builderId={b.id} /></div>
         </div>
         <dl className="grid grid-cols-3 gap-6 text-sm">
           <div><dt className="text-xs text-muted-foreground">Member since</dt><dd className="font-mono">{b.memberSince}</dd></div>

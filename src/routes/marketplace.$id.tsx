@@ -12,6 +12,8 @@ import { BuilderAvatar, EquityChart, ErrorState, MetricGrid, Page, RiskDisclosur
 import * as api from "@/services/api";
 import { SYMBOLS, TIMEFRAMES, type TrialResult, type TrialSettings } from "@/mockData";
 import { meta } from "@/lib/meta";
+import { FavoriteButton, ReportDialog, ReviewSection, WhatsAppContact } from "@/components/market/extras";
+import { useDevState } from "@/lib/devState";
 
 export const Route = createFileRoute("/marketplace/$id")({
   head: () => meta("Strategy details · Tickforge Marketplace", "Backtest results, a free test run on your own settings, reviews and builder info."),
@@ -46,6 +48,7 @@ function Detail() {
             <div className="font-mono text-xl font-semibold">{money(l.price)}</div>
             {l.sourcePrice != null && <div className="text-[11px] text-muted-foreground">{money(l.sourcePrice)} with source</div>}
           </div>
+          <FavoriteButton listingId={l.id} className="rounded-md border p-2.5" />
           <Button size="lg" asChild><Link to="/checkout/$id" params={{ id: l.id }}>Buy</Link></Button>
         </div>
       </div>
@@ -81,7 +84,8 @@ function Detail() {
             </ul>
           </section>
           <section>
-            <h2 className="mb-3 font-semibold">Reviews</h2>
+            <div className="mb-3 flex items-center justify-between gap-2"><h2 className="font-semibold">Reviews</h2><ReportDialog listingId={l.id} /></div>
+            <div className="mb-3"><ReviewSection listingId={l.id} /></div>
             {l.reviews.length === 0 ? <p className="text-sm text-muted-foreground">No reviews yet.</p> : (
               <div className="space-y-3">
                 {l.reviews.map((r) => (
@@ -103,6 +107,7 @@ function Detail() {
           <p className="mt-3 text-sm text-muted-foreground">{l.builder.bio}</p>
           <p className="mt-2 text-xs text-muted-foreground">{l.builder.totalSales} sales · member since {l.builder.memberSince.slice(0, 4)}</p>
           <Button variant="outline" size="sm" className="mt-4 w-full" asChild><Link to="/builders/$id" params={{ id: l.builder.id }}>View profile</Link></Button>
+          <div className="mt-3"><WhatsAppContact builderId={l.builder.id} title={l.title} /></div>
         </aside>
       </div>
       <RiskDisclosure />
@@ -126,17 +131,21 @@ function TrialPanel({ listing }: { listing: Detail }) {
     } catch (e) { setError((e as Error).message); }
     setProgress(null);
     setLeft(await api.getTrialsRemaining(listing.id));
+    window.dispatchEvent(new Event("credits-changed"));
   };
   const busy = progress != null;
+  const cost = api.getTrialRunCost().cost;
+  const dev = useDevState();
   const invalid = !s.from || !s.to || s.from >= s.to || s.deposit < 100;
 
   return (
     <section className="mt-8 rounded-lg border border-primary/30 bg-panel p-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="font-semibold">Test this strategy</h2>
-        {left != null && <Badge variant="outline">{left} of {api.TRIAL_LIMIT} test runs left</Badge>}
+        {left != null && <Badge variant="outline">{left} of {api.TRIAL_LIMIT} free test runs left today</Badge>}
       </div>
       <p className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground"><Lock className="h-3.5 w-3.5" /> You see results only. Strategy files are available after purchase.</p>
+      <p className="mt-1 text-xs text-muted-foreground">{left ? `This test is free (daily allowance). Extra tests cost about $${cost.toFixed(2)} each, deducted from your credits.` : `This test costs about $${cost.toFixed(2)} and is deducted from your credits.`}</p>
       <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
         <div className="space-y-1"><Label className="text-xs">Symbol</Label>
           <Select value={s.symbol} onValueChange={(v) => setS({ ...s, symbol: v })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{SYMBOLS.map((x) => <SelectItem key={x} value={x}>{x}</SelectItem>)}</SelectContent></Select></div>
@@ -147,8 +156,8 @@ function TrialPanel({ listing }: { listing: Detail }) {
         <div className="space-y-1"><Label className="text-xs">Initial deposit ($)</Label><Input type="number" min={100} value={s.deposit} onChange={(e) => setS({ ...s, deposit: Number(e.target.value) })} /></div>
       </div>
       <div className="mt-4 flex flex-wrap items-center gap-3">
-        <Button onClick={run} disabled={busy || left === 0 || invalid}>{busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Play className="h-4 w-4" />} Run backtest</Button>
-        {left === 0 && <span className="text-xs text-muted-foreground">You've used all test runs for this strategy.</span>}
+        <Button onClick={run} disabled={busy || invalid || !dev.loggedIn}>{busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Play className="h-4 w-4" />} Run backtest{left === 0 ? ` · ~$${cost.toFixed(2)}` : " · free"}</Button>
+        {!dev.loggedIn && <span className="text-xs text-muted-foreground"><Link to="/login" className="text-primary underline">Log in</Link> to test this strategy.</span>}
         {invalid && <span className="text-xs text-loss">Check the dates and use a deposit of at least $100.</span>}
       </div>
       {busy && <div className="mt-4 space-y-1"><Progress value={progress} className="h-1.5" /><p className="text-xs text-muted-foreground">Running backtest in MT5 Strategy Tester… {progress}%</p></div>}

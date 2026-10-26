@@ -127,7 +127,10 @@ import {
   type Metrics,
   type TrialResult,
   type TrialSettings,
+  FREE_TESTS_PER_DAY,
+  TRIAL_RUN_COST,
 } from "@/mockData";
+import { creditBalance, chargeCredits } from "./credits";
 
 export type SortKey = "newest" | "purchased" | "rating" | "drawdown";
 export interface ListingFilters {
@@ -140,8 +143,8 @@ export interface ListingFilters {
   sort?: SortKey | undefined;
 }
 
-export const TRIAL_LIMIT = 3;
-let trials: TrialResult[] = [];
+export const TRIAL_LIMIT = FREE_TESTS_PER_DAY;
+let trials: (TrialResult & { charged?: boolean })[] = [];
 let purchases: { id: string; listingId: string; date: string; includesSource: boolean; version: string; updateAvailable: boolean }[] = [
   { id: "o0", listingId: "l3", date: "2026-09-14", includesSource: true, version: "v2", updateAvailable: true },
 ];
@@ -178,12 +181,15 @@ export async function getListing(id: string) {
   return clone({ ...l, builder: mBuilders.find((b) => b.id === l.builderId)!, reviews: mReviews[l.id] ?? [] });
 }
 
-export async function getTrialsRemaining(listingId: string) {
-  return TRIAL_LIMIT - trials.filter((t) => t.listingId === listingId).length;
+// Free daily allowance shared across all strategies; after that each run is charged from credits.
+const today = () => new Date().toISOString().slice(0, 10);
+export async function getTrialsRemaining(_listingId?: string) {
+  return Math.max(0, TRIAL_LIMIT - trials.filter((t) => t.date === today() && !t.charged).length);
 }
 
 export async function runTrialBacktest(listingId: string, settings: TrialSettings, onProgress?: (p: number) => void): Promise<TrialResult> {
-  if ((await getTrialsRemaining(listingId)) <= 0) throw new Error("No test runs left for this strategy");
+  const free = (await getTrialsRemaining(listingId)) > 0;
+  if (!free && creditBalance() < TRIAL_RUN_COST) throw new Error("Out of credits. Add credits to run more tests.");
   const l = mListings.find((x) => x.id === listingId);
   if (!l) throw new Error("Listing not found");
   for (let p = 0; p <= 100; p += 5) { onProgress?.(p); await wait(150); }
@@ -201,7 +207,8 @@ export async function runTrialBacktest(listingId: string, settings: TrialSetting
     sharpe: +(m.sharpe * factor).toFixed(2),
   };
   const result: TrialResult = { id: crypto.randomUUID(), listingId, date: new Date().toISOString().slice(0, 10), settings, metrics, equity: makeCurve(100 + n, settings.deposit, metrics.netProfit, metrics.drawdown) };
-  trials = [...trials, result];
+  if (!free) chargeCredits(TRIAL_RUN_COST, "Buyer test run");
+  trials = [...trials, { ...result, charged: !free }];
   return clone(result);
 }
 

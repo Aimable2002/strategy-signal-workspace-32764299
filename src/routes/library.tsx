@@ -27,7 +27,7 @@ function Library() {
   const browse = <Button size="sm" asChild><Link to="/marketplace">Browse marketplace</Link></Button>;
 
   return (
-    <Page title="My Library">
+    <Page title="My Library" actions={<Button size="sm" variant="outline" asChild><Link to="/refund">Request a refund</Link></Button>}>
       {error ? <ErrorState message={error} onRetry={load} /> : (
         <Tabs defaultValue="purchased">
           <TabsList><TabsTrigger value="purchased">Purchased</TabsTrigger><TabsTrigger value="tested">Tested</TabsTrigger></TabsList>
@@ -47,6 +47,7 @@ function Library() {
             ))}
           </TabsContent>
           <TabsContent value="tested" className="mt-4 space-y-3">
+            <p className="text-xs text-muted-foreground">You get {api.TRIAL_LIMIT} free test runs per day. After that, each test costs about ${api.getTrialRunCost().cost.toFixed(2)} and is deducted from your credits.</p>
             {!trials ? <Skeleton className="h-24" /> : trials.length === 0 ? <EmptyState title="No test runs yet" body="Open a strategy and use “Test this strategy” to see how it performs on your settings." action={browse} /> : trials.map((t) => (
               <div key={t.id} className="flex flex-wrap items-center gap-4 rounded-lg border bg-card p-4">
                 <div className="w-32"><Sparkline data={t.equity} positive={t.metrics.netProfit >= 0} /></div>

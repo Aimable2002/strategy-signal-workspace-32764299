@@ -12,16 +12,20 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as BillingRouteImport } from './routes/billing'
+import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as LibraryRouteImport } from './routes/library'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as OrdersRouteImport } from './routes/orders'
 import { Route as PricingRouteImport } from './routes/pricing'
+import { Route as RefundRouteImport } from './routes/refund'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as VerifyEmailRouteImport } from './routes/verify-email'
 import { Route as WelcomeRouteImport } from './routes/welcome'
+import { Route as WorkspacesRouteImport } from './routes/workspaces'
 import { Route as AdminReviewRouteImport } from './routes/admin.review'
 import { Route as BuildersIdRouteImport } from './routes/builders.$id'
 import { Route as CheckoutIdRouteImport } from './routes/checkout.$id'
@@ -29,8 +33,11 @@ import { Route as CheckoutSuccessRouteImport } from './routes/checkout.success'
 import { Route as MarketplaceIndexRouteImport } from './routes/marketplace.index'
 import { Route as MarketplaceIdRouteImport } from './routes/marketplace.$id'
 import { Route as SellIndexRouteImport } from './routes/sell.index'
+import { Route as SellDisputesRouteImport } from './routes/sell.disputes'
 import { Route as SellPayoutsRouteImport } from './routes/sell.payouts'
 import { Route as SellPublishRouteImport } from './routes/sell.publish'
+import { Route as SellListingsIdAnalyticsRouteImport } from './routes/sell.listings.$id.analytics'
+import { Route as SellListingsIdEditRouteImport } from './routes/sell.listings.$id.edit'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -45,6 +52,11 @@ const AccountRoute = AccountRouteImport.update({
 const BillingRoute = BillingRouteImport.update({
   id: '/billing',
   path: '/billing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FavoritesRoute = FavoritesRouteImport.update({
+  id: '/favorites',
+  path: '/favorites',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
@@ -62,6 +74,11 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const NotificationsRoute = NotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OnboardingRoute = OnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
@@ -75,6 +92,11 @@ const OrdersRoute = OrdersRouteImport.update({
 const PricingRoute = PricingRouteImport.update({
   id: '/pricing',
   path: '/pricing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RefundRoute = RefundRouteImport.update({
+  id: '/refund',
+  path: '/refund',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -95,6 +117,11 @@ const VerifyEmailRoute = VerifyEmailRouteImport.update({
 const WelcomeRoute = WelcomeRouteImport.update({
   id: '/welcome',
   path: '/welcome',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WorkspacesRoute = WorkspacesRouteImport.update({
+  id: '/workspaces',
+  path: '/workspaces',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminReviewRoute = AdminReviewRouteImport.update({
@@ -132,6 +159,11 @@ const SellIndexRoute = SellIndexRouteImport.update({
   path: '/sell/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SellDisputesRoute = SellDisputesRouteImport.update({
+  id: '/sell/disputes',
+  path: '/sell/disputes',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SellPayoutsRoute = SellPayoutsRouteImport.update({
   id: '/sell/payouts',
   path: '/sell/payouts',
@@ -142,79 +174,110 @@ const SellPublishRoute = SellPublishRouteImport.update({
   path: '/sell/publish',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SellListingsIdAnalyticsRoute = SellListingsIdAnalyticsRouteImport.update({
+  id: '/sell/listings/$id/analytics',
+  path: '/sell/listings/$id/analytics',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SellListingsIdEditRoute = SellListingsIdEditRouteImport.update({
+  id: '/sell/listings/$id/edit',
+  path: '/sell/listings/$id/edit',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/billing': typeof BillingRoute
+  '/favorites': typeof FavoritesRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/library': typeof LibraryRoute
   '/login': typeof LoginRoute
+  '/notifications': typeof NotificationsRoute
   '/onboarding': typeof OnboardingRoute
   '/orders': typeof OrdersRoute
   '/pricing': typeof PricingRoute
+  '/refund': typeof RefundRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/verify-email': typeof VerifyEmailRoute
   '/welcome': typeof WelcomeRoute
+  '/workspaces': typeof WorkspacesRoute
   '/admin/review': typeof AdminReviewRoute
   '/builders/$id': typeof BuildersIdRoute
   '/checkout/$id': typeof CheckoutIdRoute
   '/checkout/success': typeof CheckoutSuccessRoute
   '/marketplace/$id': typeof MarketplaceIdRoute
+  '/sell/disputes': typeof SellDisputesRoute
   '/sell/payouts': typeof SellPayoutsRoute
   '/sell/publish': typeof SellPublishRoute
   '/marketplace/': typeof MarketplaceIndexRoute
   '/sell/': typeof SellIndexRoute
+  '/sell/listings/$id/analytics': typeof SellListingsIdAnalyticsRoute
+  '/sell/listings/$id/edit': typeof SellListingsIdEditRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/billing': typeof BillingRoute
+  '/favorites': typeof FavoritesRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/library': typeof LibraryRoute
   '/login': typeof LoginRoute
+  '/notifications': typeof NotificationsRoute
   '/onboarding': typeof OnboardingRoute
   '/orders': typeof OrdersRoute
   '/pricing': typeof PricingRoute
+  '/refund': typeof RefundRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/verify-email': typeof VerifyEmailRoute
   '/welcome': typeof WelcomeRoute
+  '/workspaces': typeof WorkspacesRoute
   '/admin/review': typeof AdminReviewRoute
   '/builders/$id': typeof BuildersIdRoute
   '/checkout/$id': typeof CheckoutIdRoute
   '/checkout/success': typeof CheckoutSuccessRoute
   '/marketplace/$id': typeof MarketplaceIdRoute
+  '/sell/disputes': typeof SellDisputesRoute
   '/sell/payouts': typeof SellPayoutsRoute
   '/sell/publish': typeof SellPublishRoute
   '/marketplace': typeof MarketplaceIndexRoute
   '/sell': typeof SellIndexRoute
+  '/sell/listings/$id/analytics': typeof SellListingsIdAnalyticsRoute
+  '/sell/listings/$id/edit': typeof SellListingsIdEditRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/billing': typeof BillingRoute
+  '/favorites': typeof FavoritesRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/library': typeof LibraryRoute
   '/login': typeof LoginRoute
+  '/notifications': typeof NotificationsRoute
   '/onboarding': typeof OnboardingRoute
   '/orders': typeof OrdersRoute
   '/pricing': typeof PricingRoute
+  '/refund': typeof RefundRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/verify-email': typeof VerifyEmailRoute
   '/welcome': typeof WelcomeRoute
+  '/workspaces': typeof WorkspacesRoute
   '/admin/review': typeof AdminReviewRoute
   '/builders/$id': typeof BuildersIdRoute
   '/checkout/$id': typeof CheckoutIdRoute
   '/checkout/success': typeof CheckoutSuccessRoute
   '/marketplace/$id': typeof MarketplaceIdRoute
+  '/sell/disputes': typeof SellDisputesRoute
   '/sell/payouts': typeof SellPayoutsRoute
   '/sell/publish': typeof SellPublishRoute
   '/marketplace/': typeof MarketplaceIndexRoute
   '/sell/': typeof SellIndexRoute
+  '/sell/listings/$id/analytics': typeof SellListingsIdAnalyticsRoute
+  '/sell/listings/$id/edit': typeof SellListingsIdEditRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -222,98 +285,126 @@ export interface FileRouteTypes {
     | '/'
     | '/account'
     | '/billing'
+    | '/favorites'
     | '/forgot-password'
     | '/library'
     | '/login'
+    | '/notifications'
     | '/onboarding'
     | '/orders'
     | '/pricing'
+    | '/refund'
     | '/reset-password'
     | '/signup'
     | '/verify-email'
     | '/welcome'
+    | '/workspaces'
     | '/admin/review'
     | '/builders/$id'
     | '/checkout/$id'
     | '/checkout/success'
     | '/marketplace/$id'
+    | '/sell/disputes'
     | '/sell/payouts'
     | '/sell/publish'
     | '/marketplace/'
     | '/sell/'
+    | '/sell/listings/$id/analytics'
+    | '/sell/listings/$id/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/account'
     | '/billing'
+    | '/favorites'
     | '/forgot-password'
     | '/library'
     | '/login'
+    | '/notifications'
     | '/onboarding'
     | '/orders'
     | '/pricing'
+    | '/refund'
     | '/reset-password'
     | '/signup'
     | '/verify-email'
     | '/welcome'
+    | '/workspaces'
     | '/admin/review'
     | '/builders/$id'
     | '/checkout/$id'
     | '/checkout/success'
     | '/marketplace/$id'
+    | '/sell/disputes'
     | '/sell/payouts'
     | '/sell/publish'
     | '/marketplace'
     | '/sell'
+    | '/sell/listings/$id/analytics'
+    | '/sell/listings/$id/edit'
   id:
     | '__root__'
     | '/'
     | '/account'
     | '/billing'
+    | '/favorites'
     | '/forgot-password'
     | '/library'
     | '/login'
+    | '/notifications'
     | '/onboarding'
     | '/orders'
     | '/pricing'
+    | '/refund'
     | '/reset-password'
     | '/signup'
     | '/verify-email'
     | '/welcome'
+    | '/workspaces'
     | '/admin/review'
     | '/builders/$id'
     | '/checkout/$id'
     | '/checkout/success'
     | '/marketplace/$id'
+    | '/sell/disputes'
     | '/sell/payouts'
     | '/sell/publish'
     | '/marketplace/'
     | '/sell/'
+    | '/sell/listings/$id/analytics'
+    | '/sell/listings/$id/edit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AccountRoute: typeof AccountRoute
   BillingRoute: typeof BillingRoute
+  FavoritesRoute: typeof FavoritesRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   LibraryRoute: typeof LibraryRoute
   LoginRoute: typeof LoginRoute
+  NotificationsRoute: typeof NotificationsRoute
   OnboardingRoute: typeof OnboardingRoute
   OrdersRoute: typeof OrdersRoute
   PricingRoute: typeof PricingRoute
+  RefundRoute: typeof RefundRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SignupRoute: typeof SignupRoute
   VerifyEmailRoute: typeof VerifyEmailRoute
   WelcomeRoute: typeof WelcomeRoute
+  WorkspacesRoute: typeof WorkspacesRoute
   AdminReviewRoute: typeof AdminReviewRoute
   BuildersIdRoute: typeof BuildersIdRoute
   CheckoutIdRoute: typeof CheckoutIdRoute
   CheckoutSuccessRoute: typeof CheckoutSuccessRoute
   MarketplaceIdRoute: typeof MarketplaceIdRoute
+  SellDisputesRoute: typeof SellDisputesRoute
   SellPayoutsRoute: typeof SellPayoutsRoute
   SellPublishRoute: typeof SellPublishRoute
   MarketplaceIndexRoute: typeof MarketplaceIndexRoute
   SellIndexRoute: typeof SellIndexRoute
+  SellListingsIdAnalyticsRoute: typeof SellListingsIdAnalyticsRoute
+  SellListingsIdEditRoute: typeof SellListingsIdEditRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -339,6 +430,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BillingRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/favorites': {
+      id: '/favorites'
+      path: '/favorites'
+      fullPath: '/favorites'
+      preLoaderRoute: typeof FavoritesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/forgot-password': {
       id: '/forgot-password'
       path: '/forgot-password'
@@ -360,6 +458,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/notifications': {
+      id: '/notifications'
+      path: '/notifications'
+      fullPath: '/notifications'
+      preLoaderRoute: typeof NotificationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/onboarding': {
       id: '/onboarding'
       path: '/onboarding'
@@ -379,6 +484,13 @@ declare module '@tanstack/react-router' {
       path: '/pricing'
       fullPath: '/pricing'
       preLoaderRoute: typeof PricingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/refund': {
+      id: '/refund'
+      path: '/refund'
+      fullPath: '/refund'
+      preLoaderRoute: typeof RefundRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/reset-password': {
@@ -407,6 +519,13 @@ declare module '@tanstack/react-router' {
       path: '/welcome'
       fullPath: '/welcome'
       preLoaderRoute: typeof WelcomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/workspaces': {
+      id: '/workspaces'
+      path: '/workspaces'
+      fullPath: '/workspaces'
+      preLoaderRoute: typeof WorkspacesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/review': {
@@ -458,6 +577,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SellIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sell/disputes': {
+      id: '/sell/disputes'
+      path: '/sell/disputes'
+      fullPath: '/sell/disputes'
+      preLoaderRoute: typeof SellDisputesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sell/payouts': {
       id: '/sell/payouts'
       path: '/sell/payouts'
@@ -472,6 +598,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SellPublishRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sell/listings/$id/analytics': {
+      id: '/sell/listings/$id/analytics'
+      path: '/sell/listings/$id/analytics'
+      fullPath: '/sell/listings/$id/analytics'
+      preLoaderRoute: typeof SellListingsIdAnalyticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sell/listings/$id/edit': {
+      id: '/sell/listings/$id/edit'
+      path: '/sell/listings/$id/edit'
+      fullPath: '/sell/listings/$id/edit'
+      preLoaderRoute: typeof SellListingsIdEditRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -479,25 +619,32 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccountRoute: AccountRoute,
   BillingRoute: BillingRoute,
+  FavoritesRoute: FavoritesRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
   LibraryRoute: LibraryRoute,
   LoginRoute: LoginRoute,
+  NotificationsRoute: NotificationsRoute,
   OnboardingRoute: OnboardingRoute,
   OrdersRoute: OrdersRoute,
   PricingRoute: PricingRoute,
+  RefundRoute: RefundRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SignupRoute: SignupRoute,
   VerifyEmailRoute: VerifyEmailRoute,
   WelcomeRoute: WelcomeRoute,
+  WorkspacesRoute: WorkspacesRoute,
   AdminReviewRoute: AdminReviewRoute,
   BuildersIdRoute: BuildersIdRoute,
   CheckoutIdRoute: CheckoutIdRoute,
   CheckoutSuccessRoute: CheckoutSuccessRoute,
   MarketplaceIdRoute: MarketplaceIdRoute,
+  SellDisputesRoute: SellDisputesRoute,
   SellPayoutsRoute: SellPayoutsRoute,
   SellPublishRoute: SellPublishRoute,
   MarketplaceIndexRoute: MarketplaceIndexRoute,
   SellIndexRoute: SellIndexRoute,
+  SellListingsIdAnalyticsRoute: SellListingsIdAnalyticsRoute,
+  SellListingsIdEditRoute: SellListingsIdEditRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -86,7 +86,7 @@ function rng(seed: number) {
   };
 }
 
-export function makeEquity(seed: number, deposit: number, net: number, dd: number, points = 60): EquityPoint[] {
+export function makeCurve(seed: number, deposit: number, net: number, dd: number, points = 60): EquityPoint[] {
   const r = rng(seed);
   const out: EquityPoint[] = [];
   const noise = deposit * (dd / 100) * 0.6;
@@ -127,7 +127,7 @@ export const listings: Listing[] = seeds.map((s, idx) => ({
   status: s.status ?? "Live",
   deposit: 10000,
   period: { from: "2023-01-01", to: "2024-12-31" },
-  equity: makeEquity(idx + 3, 10000, s.metrics.netProfit, s.metrics.drawdown),
+  equity: makeCurve(idx + 3, 10000, s.metrics.netProfit, s.metrics.drawdown),
   inputs: [
     { name: "RiskPercent", value: "1.0", note: "Risk per trade, % of balance" },
     { name: "AtrMultiplier", value: "2.0", note: "Stop distance in ATRs" },
@@ -185,7 +185,7 @@ export const dashboard = {
 };
 
 export const reviewQueue = [
-  { ...listings[0], id: "q1", title: "Momentum Gold H4", builderId: "b1", symbol: "XAUUSD", timeframe: "H4", style: "Trend" as Style, price: 109, submittedAt: "2026-10-24", status: "In review" as ListingStatus, equity: makeEquity(41, 10000, 2780, 9.4), metrics: { netProfit: 2780, profitFactor: 1.48, drawdown: 9.4, winRate: 45, totalTrades: 156, sharpe: 1.18 } },
-  { ...listings[1], id: "q2", title: "Night Owl Scalper", builderId: "b2", symbol: "EURUSD", timeframe: "M5", style: "Scalping" as Style, price: 89, submittedAt: "2026-10-25", status: "In review" as ListingStatus, equity: makeEquity(42, 10000, -310, 17.2), metrics: { netProfit: -310, profitFactor: 0.96, drawdown: 17.2, winRate: 58, totalTrades: 940, sharpe: -0.08 } },
-  { ...listings[2], id: "q3", title: "Ranging Yen Fader", builderId: "b3", symbol: "USDJPY", timeframe: "H1", style: "Mean reversion" as Style, price: 75, submittedAt: "2026-10-25", status: "In review" as ListingStatus, equity: makeEquity(43, 10000, 1420, 6.8), metrics: { netProfit: 1420, profitFactor: 1.31, drawdown: 6.8, winRate: 56, totalTrades: 204, sharpe: 1.02 } },
+  { ...listings[0], id: "q1", title: "Momentum Gold H4", builderId: "b1", symbol: "XAUUSD", timeframe: "H4", style: "Trend" as Style, price: 109, submittedAt: "2026-10-24", status: "In review" as ListingStatus, equity: makeCurve(41, 10000, 2780, 9.4), metrics: { netProfit: 2780, profitFactor: 1.48, drawdown: 9.4, winRate: 45, totalTrades: 156, sharpe: 1.18 } },
+  { ...listings[1], id: "q2", title: "Night Owl Scalper", builderId: "b2", symbol: "EURUSD", timeframe: "M5", style: "Scalping" as Style, price: 89, submittedAt: "2026-10-25", status: "In review" as ListingStatus, equity: makeCurve(42, 10000, -310, 17.2), metrics: { netProfit: -310, profitFactor: 0.96, drawdown: 17.2, winRate: 58, totalTrades: 940, sharpe: -0.08 } },
+  { ...listings[2], id: "q3", title: "Ranging Yen Fader", builderId: "b3", symbol: "USDJPY", timeframe: "H1", style: "Mean reversion" as Style, price: 75, submittedAt: "2026-10-25", status: "In review" as ListingStatus, equity: makeCurve(43, 10000, 1420, 6.8), metrics: { netProfit: 1420, profitFactor: 1.31, drawdown: 6.8, winRate: 56, totalTrades: 204, sharpe: 1.02 } },
 ];

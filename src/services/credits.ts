@@ -11,8 +11,8 @@ export function creditBalance() {
 }
 
 export function chargeCredits(amount: number, description: string) {
+  normalBalance = +(creditBalance() - amount).toFixed(2);
   if (getDevState().credit !== "normal") setDevState({ credit: "normal" });
-  normalBalance = +(normalBalance - amount).toFixed(2);
   txLog = [{ id: crypto.randomUUID(), date: new Date().toISOString().slice(0, 10), type: "Usage charge", description, amount: -amount }, ...txLog];
 }
 

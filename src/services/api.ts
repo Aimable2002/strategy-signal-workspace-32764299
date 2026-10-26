@@ -340,7 +340,7 @@ export async function getRateCard() { await wait(150); return { rates: clone(rat
 export function estimateCost(hoursPerWeek: number, backtestsPerWeek: number, aiMessagesPerWeek = 100) {
   const r = Object.fromEntries(rateCard.map((x) => [x.id, x.rate]));
   const weeks = 4.33;
-  const monthly = hoursPerWeek * weeks * r.running! + backtestsPerWeek * weeks * r.backtest! + (aiMessagesPerWeek * weeks / 1000) * r.ai! + 3 * r.storage!;
+  const monthly = hoursPerWeek * weeks * r["running"]! + backtestsPerWeek * weeks * r["backtest"]! + (aiMessagesPerWeek * weeks / 1000) * r["ai"]! + 3 * r["storage"]!;
   return +monthly.toFixed(2);
 }
 export function hourlyRate() { return rateCard.find((r) => r.id === "running")!.rate; }

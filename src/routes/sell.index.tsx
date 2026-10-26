@@ -31,7 +31,7 @@ function Dashboard() {
   useEffect(load, []);
 
   return (
-    <Page title="Builder dashboard" actions={<Button asChild><Link to="/sell/publish"><Plus className="h-4 w-4" /> Publish a strategy</Link></Button>}>
+    <Page title="Builder dashboard" actions={<Button asChild><Link to="/sell/publish" search={{}}><Plus className="h-4 w-4" /> Publish a strategy</Link></Button>}>
       {error ? <ErrorState message={error} onRetry={load} /> : !d ? <div className="space-y-4"><Skeleton className="h-24" /><Skeleton className="h-72" /></div> : (
         <div className="space-y-6">
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -58,7 +58,7 @@ function Dashboard() {
             {d.listings.filter((l) => l.connectionLost).map((l) => (
               <div key={l.id} className="mb-3 flex flex-wrap items-center gap-2 rounded-md border border-warning/40 bg-warning/5 px-3 py-2 text-sm text-warning">
                 <AlertTriangle className="h-4 w-4" /> <strong>{l.title}:</strong> Demo account connection lost. Reconnect to keep test runs working.
-                <Button size="sm" variant="outline" className="ml-auto h-7" asChild><Link to="/sell/publish">Reconnect</Link></Button>
+                <Button size="sm" variant="outline" className="ml-auto h-7" asChild><Link to="/sell/publish" search={{}}>Reconnect</Link></Button>
               </div>
             ))}
             <div className="rounded-lg border">

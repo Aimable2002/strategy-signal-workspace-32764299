@@ -15,7 +15,7 @@ import { meta } from "@/lib/meta";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/sell/publish")({
-  validateSearch: (s: Record<string, unknown>) => ({ strategy: s.strategy ? String(s.strategy) : undefined, version: s.version ? String(s.version) : undefined }),
+  validateSearch: (s: Record<string, unknown>) => ({ strategy: s["strategy"] ? String(s["strategy"]) : undefined, version: s["version"] ? String(s["version"]) : undefined }) as { strategy?: string | undefined; version?: string | undefined },
   head: () => meta("Publish a strategy · Tickforge", "List a strategy from your workspace on the marketplace."),
   component: Publish,
 });

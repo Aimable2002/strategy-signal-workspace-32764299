@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { meta } from "@/lib/meta";
 
 export const Route = createFileRoute("/checkout/success")({
-  validateSearch: (s: Record<string, unknown>) => ({ listing: String(s.listing ?? ""), order: String(s.order ?? "") }),
+  validateSearch: (s: Record<string, unknown>) => ({ listing: String(s["listing"] ?? ""), order: String(s["order"] ?? "") }),
   head: () => meta("Purchase complete · Tickforge", "Your strategy is now in your library."),
   component: Success,
 });

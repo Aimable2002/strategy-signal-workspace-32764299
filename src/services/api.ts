@@ -131,13 +131,13 @@ import {
 
 export type SortKey = "newest" | "purchased" | "rating" | "drawdown";
 export interface ListingFilters {
-  q?: string;
-  symbol?: string;
-  timeframe?: string;
-  style?: string;
-  broker?: string;
-  maxPrice?: number;
-  sort?: SortKey;
+  q?: string | undefined;
+  symbol?: string | undefined;
+  timeframe?: string | undefined;
+  style?: string | undefined;
+  broker?: string | undefined;
+  maxPrice?: number | undefined;
+  sort?: SortKey | undefined;
 }
 
 export const TRIAL_LIMIT = 3;

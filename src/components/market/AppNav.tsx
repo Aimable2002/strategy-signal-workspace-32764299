@@ -20,7 +20,12 @@ const linkCls = "whitespace-nowrap rounded px-2.5 py-1.5 text-sm text-muted-fore
 export function CreditChip() {
   const dev = useDevState();
   const [bal, setBal] = useState<number | null>(null);
-  useEffect(() => { api.getCreditBalance().then((b) => setBal(b.balance)); }, [dev.credit]);
+  useEffect(() => {
+    const load = () => api.getCreditBalance().then((b) => setBal(b.balance));
+    load();
+    window.addEventListener("credits-changed", load);
+    return () => window.removeEventListener("credits-changed", load);
+  }, [dev.credit]);
   const tone = bal == null ? "" : bal <= 0 ? "border-loss/50 text-loss" : bal < 2 ? "border-warning/50 text-warning" : "";
   return (
     <Link to="/billing" className={cn("flex items-center gap-1.5 rounded-full border bg-card px-2.5 py-1 font-mono text-xs", tone)} aria-label="Credit balance">

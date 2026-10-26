@@ -16,11 +16,12 @@ export const Route = createFileRoute("/marketplace/")({
 });
 
 const ALL = "all";
+const SORT_LABELS: Record<api.SortKey, string> = { newest: "Newest", purchased: "Most purchased", rating: "Highest rated", drawdown: "Lowest drawdown" };
 
 function FilterSelect({ label, value, onChange, options }: { label: string; value: string; onChange: (v: string) => void; options: readonly string[] }) {
   return (
     <Select value={value} onValueChange={onChange}>
-      <SelectTrigger className="h-9 w-full sm:w-36" aria-label={label}><SelectValue /></SelectTrigger>
+      <SelectTrigger className="h-9 w-full sm:w-36" aria-label={label}><SelectValue>{value === ALL ? `All ${label.toLowerCase()}` : value}</SelectValue></SelectTrigger>
       <SelectContent>
         <SelectItem value={ALL}>All {label.toLowerCase()}</SelectItem>
         {options.map((o) => <SelectItem key={o} value={o}>{o}</SelectItem>)}
@@ -72,7 +73,7 @@ function Marketplace() {
           </div>
           <div className="ml-auto">
             <Select value={sort} onValueChange={(v) => setSort(v as api.SortKey)}>
-              <SelectTrigger className="h-9 w-44" aria-label="Sort"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="h-9 w-44" aria-label="Sort"><SelectValue>{SORT_LABELS[sort]}</SelectValue></SelectTrigger>
               <SelectContent>
                 <SelectItem value="newest">Newest</SelectItem>
                 <SelectItem value="purchased">Most purchased</SelectItem>

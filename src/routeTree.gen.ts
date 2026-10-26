@@ -11,7 +11,9 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AccountRouteImport } from './routes/account'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as BillingRouteImport } from './routes/billing'
+import { Route as ContactRouteImport } from './routes/contact'
 import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as LibraryRouteImport } from './routes/library'
@@ -26,10 +28,13 @@ import { Route as SignupRouteImport } from './routes/signup'
 import { Route as VerifyEmailRouteImport } from './routes/verify-email'
 import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as WorkspacesRouteImport } from './routes/workspaces'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminReviewRouteImport } from './routes/admin.review'
 import { Route as BuildersIdRouteImport } from './routes/builders.$id'
 import { Route as CheckoutIdRouteImport } from './routes/checkout.$id'
 import { Route as CheckoutSuccessRouteImport } from './routes/checkout.success'
+import { Route as HelpIndexRouteImport } from './routes/help.index'
+import { Route as LegalDocRouteImport } from './routes/legal.$doc'
 import { Route as MarketplaceIndexRouteImport } from './routes/marketplace.index'
 import { Route as MarketplaceIdRouteImport } from './routes/marketplace.$id'
 import { Route as SellIndexRouteImport } from './routes/sell.index'
@@ -49,9 +54,19 @@ const AccountRoute = AccountRouteImport.update({
   path: '/account',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BillingRoute = BillingRouteImport.update({
   id: '/billing',
   path: '/billing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FavoritesRoute = FavoritesRouteImport.update({
@@ -124,10 +139,15 @@ const WorkspacesRoute = WorkspacesRouteImport.update({
   path: '/workspaces',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminReviewRoute = AdminReviewRouteImport.update({
-  id: '/admin/review',
-  path: '/admin/review',
-  getParentRoute: () => rootRouteImport,
+  id: '/review',
+  path: '/review',
+  getParentRoute: () => AdminRoute,
 } as any)
 const BuildersIdRoute = BuildersIdRouteImport.update({
   id: '/builders/$id',
@@ -142,6 +162,16 @@ const CheckoutIdRoute = CheckoutIdRouteImport.update({
 const CheckoutSuccessRoute = CheckoutSuccessRouteImport.update({
   id: '/checkout/success',
   path: '/checkout/success',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HelpIndexRoute = HelpIndexRouteImport.update({
+  id: '/help/',
+  path: '/help/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LegalDocRoute = LegalDocRouteImport.update({
+  id: '/legal/$doc',
+  path: '/legal/$doc',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MarketplaceIndexRoute = MarketplaceIndexRouteImport.update({
@@ -188,7 +218,9 @@ const SellListingsIdEditRoute = SellListingsIdEditRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
+  '/admin': typeof AdminRouteWithChildren
   '/billing': typeof BillingRoute
+  '/contact': typeof ContactRoute
   '/favorites': typeof FavoritesRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/library': typeof LibraryRoute
@@ -207,10 +239,13 @@ export interface FileRoutesByFullPath {
   '/builders/$id': typeof BuildersIdRoute
   '/checkout/$id': typeof CheckoutIdRoute
   '/checkout/success': typeof CheckoutSuccessRoute
+  '/legal/$doc': typeof LegalDocRoute
   '/marketplace/$id': typeof MarketplaceIdRoute
   '/sell/disputes': typeof SellDisputesRoute
   '/sell/payouts': typeof SellPayoutsRoute
   '/sell/publish': typeof SellPublishRoute
+  '/admin/': typeof AdminIndexRoute
+  '/help/': typeof HelpIndexRoute
   '/marketplace/': typeof MarketplaceIndexRoute
   '/sell/': typeof SellIndexRoute
   '/sell/listings/$id/analytics': typeof SellListingsIdAnalyticsRoute
@@ -220,6 +255,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/billing': typeof BillingRoute
+  '/contact': typeof ContactRoute
   '/favorites': typeof FavoritesRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/library': typeof LibraryRoute
@@ -238,10 +274,13 @@ export interface FileRoutesByTo {
   '/builders/$id': typeof BuildersIdRoute
   '/checkout/$id': typeof CheckoutIdRoute
   '/checkout/success': typeof CheckoutSuccessRoute
+  '/legal/$doc': typeof LegalDocRoute
   '/marketplace/$id': typeof MarketplaceIdRoute
   '/sell/disputes': typeof SellDisputesRoute
   '/sell/payouts': typeof SellPayoutsRoute
   '/sell/publish': typeof SellPublishRoute
+  '/admin': typeof AdminIndexRoute
+  '/help': typeof HelpIndexRoute
   '/marketplace': typeof MarketplaceIndexRoute
   '/sell': typeof SellIndexRoute
   '/sell/listings/$id/analytics': typeof SellListingsIdAnalyticsRoute
@@ -251,7 +290,9 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
+  '/admin': typeof AdminRouteWithChildren
   '/billing': typeof BillingRoute
+  '/contact': typeof ContactRoute
   '/favorites': typeof FavoritesRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/library': typeof LibraryRoute
@@ -270,10 +311,13 @@ export interface FileRoutesById {
   '/builders/$id': typeof BuildersIdRoute
   '/checkout/$id': typeof CheckoutIdRoute
   '/checkout/success': typeof CheckoutSuccessRoute
+  '/legal/$doc': typeof LegalDocRoute
   '/marketplace/$id': typeof MarketplaceIdRoute
   '/sell/disputes': typeof SellDisputesRoute
   '/sell/payouts': typeof SellPayoutsRoute
   '/sell/publish': typeof SellPublishRoute
+  '/admin/': typeof AdminIndexRoute
+  '/help/': typeof HelpIndexRoute
   '/marketplace/': typeof MarketplaceIndexRoute
   '/sell/': typeof SellIndexRoute
   '/sell/listings/$id/analytics': typeof SellListingsIdAnalyticsRoute
@@ -284,7 +328,9 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/account'
+    | '/admin'
     | '/billing'
+    | '/contact'
     | '/favorites'
     | '/forgot-password'
     | '/library'
@@ -303,10 +349,13 @@ export interface FileRouteTypes {
     | '/builders/$id'
     | '/checkout/$id'
     | '/checkout/success'
+    | '/legal/$doc'
     | '/marketplace/$id'
     | '/sell/disputes'
     | '/sell/payouts'
     | '/sell/publish'
+    | '/admin/'
+    | '/help/'
     | '/marketplace/'
     | '/sell/'
     | '/sell/listings/$id/analytics'
@@ -316,6 +365,7 @@ export interface FileRouteTypes {
     | '/'
     | '/account'
     | '/billing'
+    | '/contact'
     | '/favorites'
     | '/forgot-password'
     | '/library'
@@ -334,10 +384,13 @@ export interface FileRouteTypes {
     | '/builders/$id'
     | '/checkout/$id'
     | '/checkout/success'
+    | '/legal/$doc'
     | '/marketplace/$id'
     | '/sell/disputes'
     | '/sell/payouts'
     | '/sell/publish'
+    | '/admin'
+    | '/help'
     | '/marketplace'
     | '/sell'
     | '/sell/listings/$id/analytics'
@@ -346,7 +399,9 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/account'
+    | '/admin'
     | '/billing'
+    | '/contact'
     | '/favorites'
     | '/forgot-password'
     | '/library'
@@ -365,10 +420,13 @@ export interface FileRouteTypes {
     | '/builders/$id'
     | '/checkout/$id'
     | '/checkout/success'
+    | '/legal/$doc'
     | '/marketplace/$id'
     | '/sell/disputes'
     | '/sell/payouts'
     | '/sell/publish'
+    | '/admin/'
+    | '/help/'
     | '/marketplace/'
     | '/sell/'
     | '/sell/listings/$id/analytics'
@@ -378,7 +436,9 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AccountRoute: typeof AccountRoute
+  AdminRoute: typeof AdminRouteWithChildren
   BillingRoute: typeof BillingRoute
+  ContactRoute: typeof ContactRoute
   FavoritesRoute: typeof FavoritesRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   LibraryRoute: typeof LibraryRoute
@@ -393,14 +453,15 @@ export interface RootRouteChildren {
   VerifyEmailRoute: typeof VerifyEmailRoute
   WelcomeRoute: typeof WelcomeRoute
   WorkspacesRoute: typeof WorkspacesRoute
-  AdminReviewRoute: typeof AdminReviewRoute
   BuildersIdRoute: typeof BuildersIdRoute
   CheckoutIdRoute: typeof CheckoutIdRoute
   CheckoutSuccessRoute: typeof CheckoutSuccessRoute
+  LegalDocRoute: typeof LegalDocRoute
   MarketplaceIdRoute: typeof MarketplaceIdRoute
   SellDisputesRoute: typeof SellDisputesRoute
   SellPayoutsRoute: typeof SellPayoutsRoute
   SellPublishRoute: typeof SellPublishRoute
+  HelpIndexRoute: typeof HelpIndexRoute
   MarketplaceIndexRoute: typeof MarketplaceIndexRoute
   SellIndexRoute: typeof SellIndexRoute
   SellListingsIdAnalyticsRoute: typeof SellListingsIdAnalyticsRoute
@@ -423,11 +484,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AccountRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/billing': {
       id: '/billing'
       path: '/billing'
       fullPath: '/billing'
       preLoaderRoute: typeof BillingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/favorites': {
@@ -528,12 +603,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WorkspacesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/review': {
       id: '/admin/review'
-      path: '/admin/review'
+      path: '/review'
       fullPath: '/admin/review'
       preLoaderRoute: typeof AdminReviewRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/builders/$id': {
       id: '/builders/$id'
@@ -554,6 +636,20 @@ declare module '@tanstack/react-router' {
       path: '/checkout/success'
       fullPath: '/checkout/success'
       preLoaderRoute: typeof CheckoutSuccessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/help/': {
+      id: '/help/'
+      path: '/help'
+      fullPath: '/help/'
+      preLoaderRoute: typeof HelpIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/legal/$doc': {
+      id: '/legal/$doc'
+      path: '/legal/$doc'
+      fullPath: '/legal/$doc'
+      preLoaderRoute: typeof LegalDocRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/marketplace/': {
@@ -615,10 +711,24 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AdminRouteChildren {
+  AdminReviewRoute: typeof AdminReviewRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminReviewRoute: AdminReviewRoute,
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccountRoute: AccountRoute,
+  AdminRoute: AdminRouteWithChildren,
   BillingRoute: BillingRoute,
+  ContactRoute: ContactRoute,
   FavoritesRoute: FavoritesRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
   LibraryRoute: LibraryRoute,
@@ -633,14 +743,15 @@ const rootRouteChildren: RootRouteChildren = {
   VerifyEmailRoute: VerifyEmailRoute,
   WelcomeRoute: WelcomeRoute,
   WorkspacesRoute: WorkspacesRoute,
-  AdminReviewRoute: AdminReviewRoute,
   BuildersIdRoute: BuildersIdRoute,
   CheckoutIdRoute: CheckoutIdRoute,
   CheckoutSuccessRoute: CheckoutSuccessRoute,
+  LegalDocRoute: LegalDocRoute,
   MarketplaceIdRoute: MarketplaceIdRoute,
   SellDisputesRoute: SellDisputesRoute,
   SellPayoutsRoute: SellPayoutsRoute,
   SellPublishRoute: SellPublishRoute,
+  HelpIndexRoute: HelpIndexRoute,
   MarketplaceIndexRoute: MarketplaceIndexRoute,
   SellIndexRoute: SellIndexRoute,
   SellListingsIdAnalyticsRoute: SellListingsIdAnalyticsRoute,

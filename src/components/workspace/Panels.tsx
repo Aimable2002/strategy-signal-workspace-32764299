@@ -13,7 +13,7 @@ import { Switch } from "@/components/ui/switch";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { CodeBlock } from "./CodeBlock";
-import { getCompileErrors, getFileTree, getParametersFile, getStrategyFiles, getTerminalLogs } from "@/services/api";
+import { getCompileErrors, publishableVersionsFor, getFileTree, getParametersFile, getStrategyFiles, getTerminalLogs } from "@/services/api";
 import type { BacktestRun, CompileError, StrategyFiles } from "@/mockData";
 import { cn } from "@/lib/utils";
 
@@ -176,7 +176,9 @@ export function StrategyTab({ strategyId, runs, onDownload }: { strategyId: stri
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-2">
         <h3 className="truncate text-sm font-semibold">{files?.name ?? "EMA crossover EURUSD"}</h3>
-        <Button size="sm" className="ml-auto h-8" asChild><Link to="/sell/publish" search={{ strategy: strategyId, version }}>Publish to marketplace</Link></Button>
+        {publishableVersionsFor(strategyId).includes(version)
+          ? <Button size="sm" className="ml-auto h-8" asChild><Link to="/sell/publish" search={{ strategy: strategyId, version }}>Publish to marketplace</Link></Button>
+          : <span className="ml-auto" title="Run a backtest that passes for this version first. Only versions with a saved, passed backtest can be published."><Button size="sm" className="h-8" disabled>Publish to marketplace</Button></span>}
         <Select value={version} onValueChange={setVersion}>
           <SelectTrigger className="h-8 w-20"><SelectValue /></SelectTrigger>
           <SelectContent>{versions.map((v) => <SelectItem key={v} value={v}>{v}</SelectItem>)}</SelectContent>

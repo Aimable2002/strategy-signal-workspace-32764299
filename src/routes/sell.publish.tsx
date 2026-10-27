@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { CheckCircle2, ImagePlus, Loader2, ShieldAlert, XCircle } from "lucide-react";
+import { CheckCircle2, Loader2, ShieldAlert, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,9 +8,9 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
-import { ListingCard, Page } from "@/components/market/shared";
+import { EquityChart, ListingCard, MetricGrid, Page, PlatformRecorded } from "@/components/market/shared";
 import * as api from "@/services/api";
-import { builders, listings, myBuilderId, STYLES, SYMBOLS, TIMEFRAMES, type Style } from "@/mockData";
+import { builders, listings, myBuilderId, STYLES, type BacktestRecord, type Style } from "@/mockData";
 import { meta } from "@/lib/meta";
 import { cn } from "@/lib/utils";
 
@@ -31,7 +31,9 @@ function Publish() {
   const [conn, setConn] = useState({ server: "", account: "", password: "" });
   const [connState, setConnState] = useState<{ status: "idle" | "testing" | "ok" | "fail"; message?: string }>({ status: "idle" });
   const [d, setD] = useState({ title: "", description: "", tags: "", symbol: "EURUSD", timeframe: "H1", style: "Trend" as Style, price: 99 });
-  const [shots, setShots] = useState<string[]>([]);
+  const [record, setRecord] = useState<BacktestRecord | null>(null);
+  const [publishable, setPublishable] = useState<string[]>([]);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [license, setLicense] = useState("ex5");
   const [sourcePrice, setSourcePrice] = useState(199);
   const [submitting, setSubmitting] = useState(false);
@@ -39,6 +41,11 @@ function Publish() {
 
   useEffect(() => { api.getWorkspaceStrategiesForPublish().then(setStrategies); }, []);
   const chosen = strategies?.find((s) => s.id === strategyId);
+  useEffect(() => { if (strategyId) api.getPublishableVersions(strategyId).then(setPublishable); }, [strategyId]);
+  useEffect(() => {
+    setRecord(null);
+    if (strategyId && version) api.getBacktestRecord(strategyId, version).then((r) => { setRecord(r); if (r) setD((x) => ({ ...x, symbol: r.settings.symbol, timeframe: r.settings.timeframe })); });
+  }, [strategyId, version]);
   useEffect(() => { if (chosen && !d.title) setD((x) => ({ ...x, title: chosen.title })); }, [chosen]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const testConn = async () => {
@@ -47,7 +54,7 @@ function Publish() {
     setConnState({ status: r.ok ? "ok" : "fail", message: r.message });
   };
   const canNext = [
-    !!strategyId && !!version,
+    !!strategyId && !!version && publishable.includes(version),
     connState.status === "ok",
     d.title.trim().length > 2 && d.description.trim().length > 10 && d.price > 0,
     license === "ex5" || sourcePrice > d.price,
@@ -57,16 +64,16 @@ function Publish() {
   const preview = { ...listings[0]!, id: "preview", title: d.title || "Untitled", symbol: d.symbol, timeframe: d.timeframe, style: d.style, price: d.price, rating: 0, reviewCount: 0, broker: "Your demo account", builder: builders.find((b) => b.id === myBuilderId)! };
 
   const submit = async () => {
-    setSubmitting(true);
-    await api.submitListing({ strategyId, version, ...d, license, sourcePrice: license === "source" ? sourcePrice : null });
-    setSubmitting(false); setDone(true);
+    setSubmitting(true); setSubmitError(null);
+    try { await api.publishListing({ strategyId, version, ...d, license, sourcePrice: license === "source" ? sourcePrice : null }); setDone(true); } catch (e) { setSubmitError((e as Error).message); }
+    setSubmitting(false);
   };
 
   if (done) return (
     <main className="mx-auto flex max-w-md flex-col items-center px-6 py-20 text-center">
       <CheckCircle2 className="h-10 w-10 text-warning" />
       <h1 className="mt-4 text-xl font-semibold">In review. We'll notify you.</h1>
-      <p className="mt-2 text-sm text-muted-foreground">Our team runs its own backtest and checks the listing. This usually takes 1–2 business days.</p>
+      <p className="mt-2 text-sm text-muted-foreground">Our team reviews the listing text and your recorded results. This usually takes 1–2 business days.</p>
       <Button className="mt-6" asChild><Link to="/sell">Back to dashboard</Link></Button>
     </main>
   );
@@ -93,7 +100,21 @@ function Publish() {
             </RadioGroup>
             {chosen && (
               <div className="space-y-1"><Label className="text-xs">Version</Label>
-                <Select value={version} onValueChange={setVersion}><SelectTrigger className="w-32"><SelectValue /></SelectTrigger><SelectContent>{chosen.versions.map((v) => <SelectItem key={v} value={v}>{v}</SelectItem>)}</SelectContent></Select>
+                <Select value={version} onValueChange={setVersion}><SelectTrigger className="w-32"><SelectValue /></SelectTrigger><SelectContent>{chosen.versions.map((v) => <SelectItem key={v} value={v}>{v}{publishable.includes(v) ? "" : " · no passed backtest"}</SelectItem>)}</SelectContent></Select>
+              </div>
+            )}
+            {chosen && version && (
+              <div className="space-y-3 rounded-md border bg-panel p-3">
+                <div className="flex flex-wrap items-center justify-between gap-2"><span className="text-xs text-muted-foreground">Saved automatically from your backtest</span><PlatformRecorded /></div>
+                {!record ? <p className="text-sm text-muted-foreground">No backtest has been saved for this version yet. Ask the agent to run a backtest in your workspace first.</p>
+                  : record.status !== "passed" ? <p className="text-sm text-loss">The backtest for {version} did not pass ({record.compileResult.errors} compile errors). Fix it in your workspace and run a new backtest to publish.</p>
+                  : (
+                    <>
+                      <EquityChart height={180} series={[{ name: "Recorded result", data: record.equitySeries, color: "var(--color-primary)" }]} />
+                      <p className="font-mono text-xs text-muted-foreground">{record.settings.symbol} · {record.settings.timeframe} · {record.settings.from} to {record.settings.to} · Deposit ${record.settings.deposit.toLocaleString()} · Tested on: {record.testedOnBroker} · {record.createdAt}</p>
+                      <MetricGrid metrics={record.metrics} />
+                    </>
+                  )}
               </div>
             )}
           </>
@@ -123,20 +144,11 @@ function Publish() {
             <div className="space-y-1"><Label className="text-xs">Title</Label><Input value={d.title} onChange={(e) => setD({ ...d, title: e.target.value })} /></div>
             <div className="space-y-1"><Label className="text-xs">Description</Label><Textarea rows={4} value={d.description} onChange={(e) => setD({ ...d, description: e.target.value })} placeholder="What the strategy does, when it trades, how it manages risk." /></div>
             <div className="space-y-1"><Label className="text-xs">Tags (comma separated)</Label><Input value={d.tags} onChange={(e) => setD({ ...d, tags: e.target.value })} /></div>
-            <div className="grid gap-3 sm:grid-cols-4">
-              <div className="space-y-1"><Label className="text-xs">Symbol</Label><Select value={d.symbol} onValueChange={(v) => setD({ ...d, symbol: v })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{SYMBOLS.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent></Select></div>
-              <div className="space-y-1"><Label className="text-xs">Timeframe</Label><Select value={d.timeframe} onValueChange={(v) => setD({ ...d, timeframe: v })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{TIMEFRAMES.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent></Select></div>
+            <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-1"><Label className="text-xs">Style</Label><Select value={d.style} onValueChange={(v) => setD({ ...d, style: v as Style })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{STYLES.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent></Select></div>
               <div className="space-y-1"><Label className="text-xs">Price ($)</Label><Input type="number" min={1} value={d.price} onChange={(e) => setD({ ...d, price: Number(e.target.value) })} /></div>
             </div>
-            <div className="space-y-1">
-              <Label className="text-xs">Screenshots</Label>
-              <label className="flex cursor-pointer items-center justify-center gap-2 rounded-md border border-dashed p-6 text-sm text-muted-foreground hover:border-primary/40">
-                <ImagePlus className="h-4 w-4" /> Add screenshots
-                <input type="file" accept="image/*" multiple className="hidden" onChange={(e) => setShots(Array.from(e.target.files ?? []).map((f) => f.name))} />
-              </label>
-              {shots.length > 0 && <p className="text-xs text-muted-foreground">{shots.join(", ")}</p>}
-            </div>
+            {record && <p className="font-mono text-xs text-muted-foreground">Market from your backtest: {record.settings.symbol} · {record.settings.timeframe}</p>}
           </>
         )}
         {step === 3 && (
@@ -156,7 +168,8 @@ function Publish() {
           <>
             <h2 className="font-semibold">Review and submit</h2>
             <p className="text-xs text-muted-foreground">{chosen?.title} · {version} · {license === "source" ? `.ex5 $${d.price} / with .mq5 $${sourcePrice}` : `.ex5 only $${d.price}`}</p>
-            <div className="max-w-sm"><ListingCard listing={preview} preview /></div>
+            <div className="max-w-sm"><ListingCard listing={record ? { ...preview, equity: record.equitySeries, metrics: record.metrics, broker: record.testedOnBroker } : preview} preview /></div>
+            {submitError && <p className="text-sm text-loss">{submitError}</p>}
           </>
         )}
         <div className="flex justify-between border-t pt-4">

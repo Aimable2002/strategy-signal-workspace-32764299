@@ -139,6 +139,7 @@ function TrialPanel({ listing }: { listing: Detail }) {
   };
   const busy = progress != null;
   const cost = api.getTrialRunCost().cost;
+  const paused = api.areTrialRunsPaused();
   const dev = useDevState();
   const invalid = !s.from || !s.to || s.from >= s.to || s.deposit < 100;
 
@@ -161,8 +162,9 @@ function TrialPanel({ listing }: { listing: Detail }) {
       </div>
       <div className="mt-4 flex flex-wrap items-center gap-3">
         <Button variant="outline" onClick={() => setS(listed)} disabled={busy}><RotateCcw className="h-4 w-4" /> Reproduce the listed result</Button>
-        <Button onClick={run} disabled={busy || invalid || !dev.loggedIn}>{busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Play className="h-4 w-4" />} Run backtest{left === 0 ? ` · ~$${cost.toFixed(2)}` : " · free"}</Button>
+        <Button onClick={run} disabled={busy || invalid || !dev.loggedIn || paused}>{busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Play className="h-4 w-4" />} Run backtest{left === 0 ? ` · ~$${cost.toFixed(2)}` : " · free"}</Button>
         {!dev.loggedIn && <span className="text-xs text-muted-foreground"><Link to="/login" className="text-primary underline">Log in</Link> to test this strategy.</span>}
+        {paused && <span className="text-xs text-warning" role="status">Test runs are temporarily paused. Please try again later.</span>}
         {invalid && <span className="text-xs text-loss">Check the dates and use a deposit of at least $100.</span>}
       </div>
       {busy && <div className="mt-4 space-y-1"><Progress value={progress} className="h-1.5" /><p className="text-xs text-muted-foreground">Running backtest in MT5 Strategy Tester… {progress}%</p></div>}

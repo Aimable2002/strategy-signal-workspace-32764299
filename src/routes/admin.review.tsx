@@ -8,7 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { EmptyState, EquityChart, ErrorState, MetricGrid, Page, PlatformRecorded, money } from "@/components/market/shared";
+import { EmptyState, ErrorState, MetricGrid, Page, PlatformRecorded, money } from "@/components/market/shared";
 import * as api from "@/services/api";
 import { meta } from "@/lib/meta";
 
@@ -69,7 +69,6 @@ function ReviewQueue() {
               <div className="flex flex-wrap gap-1.5 text-xs"><Badge variant="secondary">{open.symbol}</Badge><Badge variant="secondary">{open.timeframe}</Badge><Badge variant="outline">{open.style}</Badge><span className="text-muted-foreground">by {open.builder.name} · {money(open.price)}</span></div>
               <p className="text-sm text-muted-foreground">{open.description}</p>
               <div className="flex items-center justify-between gap-2"><h3 className="text-sm font-semibold">Recorded results (read-only)</h3><PlatformRecorded /></div>
-              <EquityChart height={220} series={[{ name: "Recorded result", data: open.equity, color: "var(--color-primary)" }]} />
               <MetricGrid metrics={open.metrics} />
               <div className="space-y-1"><Label className="text-xs">Reason (required to reject)</Label><Textarea rows={3} value={reason} onChange={(e) => setReason(e.target.value)} /></div>
               {actionError && <p className="text-sm text-loss">{actionError}</p>}

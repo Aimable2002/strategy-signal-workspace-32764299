@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Area, AreaChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { AlertTriangle, CheckCircle2, ChevronDown, Download, FileArchive, FileBox, FileCode2, FileText, Folder, Loader2, Play, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -18,7 +17,6 @@ import type { BacktestRun, CompileError, StrategyFiles } from "@/mockData";
 import { cn } from "@/lib/utils";
 
 const money = (n: number) => `${n < 0 ? "−" : "+"}$${Math.abs(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-const tooltipStyle = { background: "var(--popover)", border: "1px solid var(--border)", borderRadius: 6, fontSize: 12 };
 
 function Metric({ label, value, tone }: { label: string; value: string; tone?: "profit" | "loss" }) {
   return (
@@ -46,27 +44,10 @@ export function ResultsTab({ run, progress }: { run: BacktestRun | null; progres
       <BacktestProgress progress={progress} />
       <div>
         <div className="flex items-baseline justify-between">
-          <h3 className="text-sm font-semibold">Equity curve · {run.version}</h3>
+          <h3 className="text-sm font-semibold">Backtest summary · {run.version}</h3>
           <span className="text-[11px] text-muted-foreground">{run.date}</span>
         </div>
         <p className="mt-0.5 text-[11px] text-muted-foreground">{run.settings}</p>
-      </div>
-      <div className="h-48 rounded-md border bg-card p-2">
-        <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={run.equity}>
-            <defs>
-              <linearGradient id="eq" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="var(--primary)" stopOpacity={0.25} />
-                <stop offset="100%" stopColor="var(--primary)" stopOpacity={0} />
-              </linearGradient>
-            </defs>
-            <CartesianGrid stroke="var(--border)" strokeDasharray="3 3" vertical={false} />
-            <XAxis dataKey="i" hide />
-            <YAxis domain={["auto", "auto"]} tick={{ fill: "var(--muted-foreground)", fontSize: 10 }} width={48} tickFormatter={(v) => `$${(v / 1000).toFixed(1)}k`} />
-            <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => [`$${v.toLocaleString()}`, "Equity"]} labelFormatter={(l) => `Trade #${l}`} />
-            <Area type="monotone" dataKey="equity" stroke="var(--primary)" strokeWidth={1.5} fill="url(#eq)" />
-          </AreaChart>
-        </ResponsiveContainer>
       </div>
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
         <Metric label="Net profit" value={money(run.netProfit)} tone={run.netProfit >= 0 ? "profit" : "loss"} />
@@ -76,32 +57,18 @@ export function ResultsTab({ run, progress }: { run: BacktestRun | null; progres
         <Metric label="Total trades" value={String(run.totalTrades)} />
         <Metric label="Sharpe ratio" value={run.sharpe.toFixed(2)} />
       </div>
-      <div>
-        <h3 className="mb-2 text-sm font-semibold">Last 10 simulated trades</h3>
-        <div className="scrollbar-thin overflow-x-auto rounded-md border">
-          <table className="w-full text-xs">
-            <thead className="bg-card text-muted-foreground">
-              <tr>{["Time", "Symbol", "Side", "Size", "Entry", "Exit", "P&L"].map((h) => <th key={h} className="px-2 py-1.5 text-left font-medium">{h}</th>)}</tr>
-            </thead>
-            <tbody className="font-mono">
-              {run.trades.map((t, i) => (
-                <tr key={i} className="border-t">
-                  <td className="whitespace-nowrap px-2 py-1.5 text-muted-foreground">{t.time}</td>
-                  <td className="px-2 py-1.5">{t.symbol}</td>
-                  <td className="px-2 py-1.5">{t.side}</td>
-                  <td className="px-2 py-1.5">{t.size.toFixed(2)}</td>
-                  <td className="px-2 py-1.5">{t.entry.toFixed(5)}</td>
-                  <td className="px-2 py-1.5">{t.exit.toFixed(5)}</td>
-                  <td className={cn("px-2 py-1.5 text-right", t.pnl >= 0 ? "text-profit" : "text-loss")}>{money(t.pnl)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
     </div>
   );
 }
+
+const COMPARE_ROWS = [
+  { key: "netProfit", label: "Net profit", higherIsBetter: true, fmt: (v: number) => money(v) },
+  { key: "profitFactor", label: "Profit factor", higherIsBetter: true, fmt: (v: number) => v.toFixed(2) },
+  { key: "drawdown", label: "Max drawdown", higherIsBetter: false, fmt: (v: number) => `${v.toFixed(1)}%` },
+  { key: "winRate", label: "Win rate", higherIsBetter: true, fmt: (v: number) => `${v.toFixed(1)}%` },
+  { key: "totalTrades", label: "Total trades", higherIsBetter: true, fmt: (v: number) => String(v) },
+  { key: "sharpe", label: "Sharpe ratio", higherIsBetter: true, fmt: (v: number) => v.toFixed(2) },
+] as const;
 
 export function RunsTab({ runs }: { runs: BacktestRun[] | null }) {
   const [selected, setSelected] = useState<string[]>([]);
@@ -110,7 +77,7 @@ export function RunsTab({ runs }: { runs: BacktestRun[] | null }) {
   if (runs.length === 0) return <p className="py-10 text-center text-sm text-muted-foreground">No backtests yet. Run one from Backtest settings.</p>;
   const toggle = (id: string) => { setCompare(false); setSelected((s) => s.includes(id) ? s.filter((x) => x !== id) : [...s.slice(-1), id]); };
   const [a, b] = selected.map((id) => runs.find((r) => r.id === id)!);
-  const merged = a && b ? a.equity.map((p, i) => ({ i, a: p.equity, b: b.equity[i]?.equity })) : [];
+  const rows = a && b ? COMPARE_ROWS.map((r) => ({ ...r, av: a[r.key], bv: b[r.key], diff: b[r.key] - a[r.key] })) : [];
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
@@ -138,23 +105,20 @@ export function RunsTab({ runs }: { runs: BacktestRun[] | null }) {
         </table>
       </div>
       {compare && a && b && (
-        <div className="rounded-md border bg-card p-3">
-          <div className="mb-2 flex gap-4 text-xs">
-            <span className="flex items-center gap-1.5"><span className="h-0.5 w-4 bg-chart-1" />{a.version}</span>
-            <span className="flex items-center gap-1.5"><span className="h-0.5 w-4 bg-chart-2" />{b.version}</span>
-          </div>
-          <div className="h-48">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={merged}>
-                <CartesianGrid stroke="var(--border)" strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="i" hide />
-                <YAxis domain={["auto", "auto"]} tick={{ fill: "var(--muted-foreground)", fontSize: 10 }} width={48} tickFormatter={(v) => `$${(v / 1000).toFixed(1)}k`} />
-                <Tooltip contentStyle={tooltipStyle} />
-                <Line type="monotone" dataKey="a" name={a.version} stroke="var(--chart-1)" dot={false} strokeWidth={1.5} />
-                <Line type="monotone" dataKey="b" name={b.version} stroke="var(--chart-2)" dot={false} strokeWidth={1.5} />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
+        <div className="scrollbar-thin overflow-x-auto rounded-md border bg-card">
+          <table className="w-full text-xs">
+            <thead className="text-muted-foreground"><tr><th className="px-2 py-1.5 text-left font-medium">Metric</th><th className="px-2 py-1.5 text-right font-mono font-medium">{a.version}</th><th className="px-2 py-1.5 text-right font-mono font-medium">{b.version}</th><th className="px-2 py-1.5 text-right font-medium">Change</th></tr></thead>
+            <tbody>
+              {rows.map((r) => (
+                <tr key={r.key} className="border-t">
+                  <td className="px-2 py-1.5">{r.label}</td>
+                  <td className="px-2 py-1.5 text-right font-mono">{r.fmt(r.av)}</td>
+                  <td className="px-2 py-1.5 text-right font-mono">{r.fmt(r.bv)}</td>
+                  <td className={cn("px-2 py-1.5 text-right font-mono", r.diff === 0 ? "text-muted-foreground" : (r.diff > 0) === r.higherIsBetter ? "text-profit" : "text-loss")}>{r.diff > 0 ? "+" : r.diff < 0 ? "−" : ""}{r.fmt(Math.abs(r.diff))}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
     </div>
@@ -260,9 +224,6 @@ export function FilesTab({ strategyId, onDownload }: { strategyId: string; onDow
           return (
             <li key={n.name}>
               <button onClick={() => setSel(n.name)} className={cn("flex w-full items-center gap-1.5 rounded px-2 py-1 font-mono hover:bg-accent", sel === n.name && "bg-accent text-primary")}><I className="h-3.5 w-3.5" />{n.name}</button>
-              {"children" in n && n.children && <ul className="ml-4">{n.children.map((c) => (
-                <li key={c}><button onClick={() => setSel(c)} className={cn("flex w-full items-center gap-1.5 rounded px-2 py-1 font-mono text-muted-foreground hover:bg-accent", sel === c && "bg-accent text-primary")}><FileText className="h-3.5 w-3.5" />{c}</button></li>
-              ))}</ul>}
             </li>
           );
         })}
@@ -278,8 +239,6 @@ export function FilesTab({ strategyId, onDownload }: { strategyId: string; onDow
           </div>
         )}
         {sel.endsWith(".set") && <CodeBlock code={params} filename="parameters.set" />}
-        {sel.endsWith("/") && <p className="rounded-md border bg-card p-4 text-xs text-muted-foreground">Folder with HTML reports from each Strategy Tester run.</p>}
-        {sel.endsWith(".html") && <p className="rounded-md border bg-card p-4 text-xs text-muted-foreground">{sel} — Strategy Tester report. Preview not available in this prototype.</p>}
       </div>
     </div>
   );

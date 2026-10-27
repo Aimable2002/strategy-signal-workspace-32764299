@@ -14,7 +14,7 @@ export const Route = createFileRoute("/onboarding")({
 const tour = [
   { icon: LayoutPanelLeft, title: "Strategies", body: "Left: every strategy you've built, with versions." },
   { icon: Bot, title: "Agent chat", body: "Middle: describe changes and the agent edits, compiles and tests." },
-  { icon: PlayCircle, title: "Results", body: "Right: equity curve, metrics, files and Strategy Tester settings." },
+  { icon: PlayCircle, title: "Results", body: "Right: backtest summary, runs, files and Strategy Tester settings." },
 ];
 
 function Chip({ on, onClick, children }: { on: boolean; onClick: () => void; children: React.ReactNode }) {

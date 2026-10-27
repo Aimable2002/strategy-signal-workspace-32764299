@@ -88,7 +88,7 @@ export const helpArticles: { slug: string; category: string; title: string; summ
   { slug: "first-strategy", category: "getting-started", title: "Build your first strategy", summary: "Describe an idea and let the agent write, compile and backtest it.", body: [
     { h: "Describe the idea", p: "Open your workspace and tell the agent your entry, exit and risk rules in plain words. For example: buy when the 20 EMA crosses above the 50 EMA on EURUSD H1, stop loss 40 pips." },
     { h: "Let the agent build it", p: "The agent writes the .mq5 source, compiles it to an .ex5 file and runs the MT5 Strategy Tester. You can watch each step in the chat and the Terminal tab." },
-    { h: "Read the results", p: "Open the Results tab for the equity curve and key numbers. Ask the agent to change a rule, add a stop loss or test another pair, then compare runs in the Runs tab." },
+    { h: "Read the results", p: "Open the Results tab for the summary numbers and the test settings. Ask the agent to change a rule, add a stop loss or test another pair, then compare runs in the Runs tab." },
   ]},
   { slug: "credits-run-out", category: "credits", title: "What happens when credits run out", summary: "Your workspace stops and files are kept for 30 days.", body: [
     { h: "Low balance warning", p: "When your balance falls below $2.00 you see a banner in the workspace and a notification. Add credits any time from Billing." },
@@ -112,7 +112,7 @@ export const helpArticles: { slug: string; category: string; title: string; summ
   ]},
   { slug: "test-before-buy", category: "buying", title: "Testing a strategy before you buy", summary: "Free daily test runs and what you can see.", body: [
     { h: "Run your own test", p: "On a strategy page, change the symbol, dates or deposit and run a backtest. Use Reproduce the listed result to check that the numbers match the listing." },
-    { h: "What you see", p: "You see results only: the equity curve, key numbers and trades. The strategy files are available after you buy." },
+    { h: "What you see", p: "You see the summary numbers only, such as net profit, drawdown and win rate. The strategy files are available after you buy." },
     { h: "Cost", p: "You get a few free test runs each day. Extra runs cost a small amount from your credits, shown before you start." },
   ]},
   { slug: "refunds", category: "buying", title: "Requesting a refund", summary: "When refunds are possible and how disputes work.", body: [
@@ -137,7 +137,7 @@ export const adminUsers = [
 ];
 
 export const reports = [
-  { id: "r1", listingId: "l9", listing: "Gold Fade Overnight", reason: "Suspicious results", details: "Equity curve looks too smooth for the stated drawdown.", reporter: "Sam Reyes", date: "2026-10-24", status: "Open" },
+  { id: "r1", listingId: "l9", listing: "Gold Fade Overnight", reason: "Suspicious results", details: "Results look too good for the stated drawdown.", reporter: "Sam Reyes", date: "2026-10-24", status: "Open" },
   { id: "r2", listingId: "l4", listing: "London Open Breakout", reason: "Misleading claims", details: "Description promises profit every month.", reporter: "Priya Nair", date: "2026-10-22", status: "Open" },
   { id: "r3", listingId: "l11", listing: "Euro Breakout H4", reason: "Copyright", details: "Looks copied from a free EA.", reporter: "Tom W.", date: "2026-10-18", status: "Resolved" },
 ];

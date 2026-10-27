@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { EmptyState, ErrorState, Page, Sparkline, money } from "@/components/market/shared";
+import { EmptyState, ErrorState, Page, money } from "@/components/market/shared";
 import * as api from "@/services/api";
 import { meta } from "@/lib/meta";
 import { cn } from "@/lib/utils";
@@ -50,7 +50,6 @@ function Library() {
             <p className="text-xs text-muted-foreground">You get {api.TRIAL_LIMIT} free test runs per day. After that, each test costs about ${api.getTrialRunCost().cost.toFixed(2)} and is deducted from your credits.</p>
             {!trials ? <Skeleton className="h-24" /> : trials.length === 0 ? <EmptyState title="No test runs yet" body="Open a strategy and use “Test this strategy” to see how it performs on your settings." action={browse} /> : trials.map((t) => (
               <div key={t.id} className="flex flex-wrap items-center gap-4 rounded-lg border bg-card p-4">
-                <div className="w-32"><Sparkline data={t.equity} positive={t.metrics.netProfit >= 0} /></div>
                 <div className="min-w-0 flex-1">
                   <Link to="/marketplace/$id" params={{ id: t.listingId }} className="font-semibold hover:underline">{t.listing.title}</Link>
                   <p className="font-mono text-xs text-muted-foreground">{t.settings.symbol} · {t.settings.timeframe} · {t.settings.from} to {t.settings.to} · tested {t.date}</p>

@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { BuilderAvatar, EquityChart, ErrorState, MetricGrid, Page, PlatformRecorded, RiskDisclosure, Stars, money } from "@/components/market/shared";
+import { BuilderAvatar, ErrorState, MetricGrid, Page, PlatformRecorded, RiskDisclosure, Stars, money } from "@/components/market/shared";
 import * as api from "@/services/api";
 import { SYMBOLS, TIMEFRAMES, type TrialResult, type TrialSettings } from "@/mockData";
 import { meta } from "@/lib/meta";
@@ -55,7 +55,6 @@ function Detail() {
 
       <section className="mt-6 rounded-lg border bg-card p-4">
         <div className="mb-2 flex items-center justify-between gap-2"><h2 className="text-sm font-semibold">Listed result</h2><PlatformRecorded /></div>
-        <EquityChart series={[{ name: "Listed result", data: l.equity, color: "var(--color-primary)" }]} />
         <p className="mt-2 font-mono text-xs text-muted-foreground">{l.symbol} · {l.timeframe} · {l.period.from} to {l.period.to} · Deposit {money(l.deposit)} · Tested on: {l.broker}</p>
       </section>
       <div className="mt-4"><MetricGrid metrics={l.metrics} /></div>
@@ -178,10 +177,7 @@ function TrialPanel({ listing }: { listing: Detail }) {
               <span className="text-xs text-muted-foreground">(net profit, profit factor and drawdown within {api.MATCH_TOLERANCE_PCT}%)</span>
             </div>
           )}
-          <div className="rounded-md border bg-card p-3">
-            <EquityChart height={260} series={[{ name: "Listed result", data: listing.equity, color: "var(--color-muted-foreground)" }, { name: "Your test", data: result.equity, color: "var(--color-primary)" }]} />
-            <p className="mt-1 font-mono text-xs text-muted-foreground">Your test: {result.settings.symbol} · {result.settings.timeframe} · {result.settings.from} to {result.settings.to} · Deposit {money(result.settings.deposit)}</p>
-          </div>
+          <p className="font-mono text-xs text-muted-foreground">Your test: {result.settings.symbol} · {result.settings.timeframe} · {result.settings.from} to {result.settings.to} · Deposit {money(result.settings.deposit)}</p>
           {cmp && (
             <div className="overflow-x-auto rounded-md border bg-card">
               <table className="w-full text-sm">

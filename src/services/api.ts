@@ -119,7 +119,6 @@ import {
   builders as mBuilders,
   dashboard as mDashboard,
   listings as mListings,
-  makeCurve,
   reviewQueue as mReviewQueue,
   reviews as mReviews,
   workspaceStrategiesForPublish,
@@ -199,7 +198,7 @@ export async function runTrialBacktest(listingId: string, settings: TrialSetting
   const sameMarket = settings.symbol === l.symbol && settings.timeframe === l.timeframe;
   const exact = sameMarket && settings.from === l.period.from && settings.to === l.period.to && settings.deposit === l.deposit;
   if (exact) {
-    const result: TrialResult = { id: crypto.randomUUID(), listingId, date: new Date().toISOString().slice(0, 10), settings, metrics: { ...l.metrics, netProfit: Math.round(l.metrics.netProfit * 0.98) }, equity: l.equity.map((p) => ({ ...p })) };
+    const result: TrialResult = { id: crypto.randomUUID(), listingId, date: new Date().toISOString().slice(0, 10), settings, metrics: { ...l.metrics, netProfit: Math.round(l.metrics.netProfit * 0.98) } };
     if (!free) chargeCredits(TRIAL_RUN_COST, "Buyer test run");
     trials = [...trials, { ...result, charged: !free }];
     return clone(result);
@@ -215,7 +214,7 @@ export async function runTrialBacktest(listingId: string, settings: TrialSetting
     totalTrades: Math.round(m.totalTrades * (0.8 + factor / 5)),
     sharpe: +(m.sharpe * factor).toFixed(2),
   };
-  const result: TrialResult = { id: crypto.randomUUID(), listingId, date: new Date().toISOString().slice(0, 10), settings, metrics, equity: makeCurve(100 + n, settings.deposit, metrics.netProfit, metrics.drawdown) };
+  const result: TrialResult = { id: crypto.randomUUID(), listingId, date: new Date().toISOString().slice(0, 10), settings, metrics };
   if (!free) chargeCredits(TRIAL_RUN_COST, "Buyer test run");
   trials = [...trials, { ...result, charged: !free }];
   return clone(result);

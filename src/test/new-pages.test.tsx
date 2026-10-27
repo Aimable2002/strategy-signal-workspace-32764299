@@ -13,6 +13,7 @@ import { Route as Reports } from "@/routes/admin.reports";
 import { Route as Users } from "@/routes/admin.users";
 import { Route as HelpArticle } from "@/routes/help.$slug";
 import { Route as HelpIndex } from "@/routes/help.index";
+import { Route as Workspace } from "@/routes/index";
 import { Route as Maintenance } from "@/routes/maintenance";
 import { Route as Listing } from "@/routes/marketplace.$id";
 import * as api from "@/services/api";
@@ -20,6 +21,7 @@ import * as api from "@/services/api";
 vi.setConfig({ testTimeout: 20000 });
 
 beforeAll(() => {
+  Element.prototype.scrollIntoView ??= () => {};
   globalThis.ResizeObserver ??= class { observe() {} unobserve() {} disconnect() {} } as unknown as typeof ResizeObserver;
 });
 afterEach(() => { cleanup(); setDevState({ role: "admin", loggedIn: true }); });
@@ -129,5 +131,21 @@ describe("help center and system pages", () => {
     expect(screen.queryByRole("link", { name: "Marketplace" })).toBeNull();
     fireEvent.click(screen.getByRole("button", { name: "Check again" }));
     await screen.findByText(/Still down as of/, {}, T);
+  });
+});
+
+describe("results are a summary only", () => {
+  it("shows summary numbers, with no chart and no trades list, in the workspace and on a listing", async () => {
+    await visit("/", [{ route: Workspace, path: "/" }]);
+    await screen.findByText(/Backtest summary/, {}, T);
+    expect(screen.getAllByText("Net profit").length).toBeGreaterThan(0);
+    expect(screen.queryByText(/simulated trades/i)).toBeNull();
+    expect(document.querySelector(".recharts-wrapper")).toBeNull();
+    cleanup();
+
+    await visit("/marketplace/l1", [{ route: Listing, path: "/marketplace/$id" }]);
+    expect((await screen.findAllByText("Net profit", {}, T)).length).toBeGreaterThan(0);
+    expect(document.querySelector(".recharts-wrapper")).toBeNull();
+    expect(screen.queryByText(/equity/i)).toBeNull();
   });
 });

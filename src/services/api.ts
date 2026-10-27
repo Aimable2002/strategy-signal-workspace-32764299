@@ -519,6 +519,14 @@ export async function getHelpArticles(q = "") {
   const t = q.trim().toLowerCase();
   return { categories: clone(helpCategories), articles: clone(helpArticles.filter((a) => !t || a.title.toLowerCase().includes(t) || a.summary.toLowerCase().includes(t))) };
 }
+export async function getHelpArticle(slug: string) {
+  await wait(200);
+  const article = helpArticles.find((x) => x.slug === slug);
+  if (!article) return null;
+  const category = helpCategories.find((c) => c.slug === article.category) ?? null;
+  const related = helpArticles.filter((x) => x.category === article.category && x.slug !== slug).slice(0, 3);
+  return clone({ article, category, related });
+}
 export function getLegalDoc(slug: string) { return legalDocs[slug] ?? null; }
 export async function submitSupportRequest(d: { topic: string; message: string; attachment?: string }) {
   await wait(800);

@@ -123,6 +123,7 @@ import {
   reviewQueue as mReviewQueue,
   reviews as mReviews,
   workspaceStrategiesForPublish,
+  backtestRecords as mRecords,
   type Listing,
   type Metrics,
   type TrialResult,
@@ -196,6 +197,13 @@ export async function runTrialBacktest(listingId: string, settings: TrialSetting
   for (let p = 0; p <= 100; p += 5) { onProgress?.(p); await wait(150); }
   const n = trials.length + 1;
   const sameMarket = settings.symbol === l.symbol && settings.timeframe === l.timeframe;
+  const exact = sameMarket && settings.from === l.period.from && settings.to === l.period.to && settings.deposit === l.deposit;
+  if (exact) {
+    const result: TrialResult = { id: crypto.randomUUID(), listingId, date: new Date().toISOString().slice(0, 10), settings, metrics: { ...l.metrics, netProfit: Math.round(l.metrics.netProfit * 0.98) }, equity: l.equity.map((p) => ({ ...p })) };
+    if (!free) chargeCredits(TRIAL_RUN_COST, "Buyer test run");
+    trials = [...trials, { ...result, charged: !free }];
+    return clone(result);
+  }
   const factor = (sameMarket ? 0.85 : 0.35) + ((n * 37) % 20) / 100;
   const scale = settings.deposit / l.deposit;
   const m = l.metrics;
@@ -266,9 +274,41 @@ export async function testDemoConnection(details: { server: string; account: str
   return { ok: true as const, message: "Connected to demo account. Balance $10,000.00" };
 }
 
-export async function submitListing(_data: Record<string, unknown>) {
+export async function getBacktestRecord(strategyId: string, version: string) {
+  await wait(150);
+  return clone(mRecords.find((r) => r.strategyId === strategyId && r.version === version) ?? null);
+}
+
+/** Versions that have a passed, platform-saved backtest record. Only these can be published. */
+export function publishableVersionsFor(strategyId: string) {
+  return mRecords.filter((r) => r.strategyId === strategyId && r.status === "passed").map((r) => r.version);
+}
+export async function getPublishableVersions(strategyId: string) {
+  await wait(100);
+  return publishableVersionsFor(strategyId);
+}
+
+export async function publishListing(data: { strategyId: string; version: string } & Record<string, unknown>) {
   await wait(1200);
+  if (!publishableVersionsFor(data.strategyId).includes(data.version)) throw new Error("This version has no passed backtest record and can't be published");
   return { id: crypto.randomUUID(), status: "In review" as const };
+}
+export const submitListing = publishListing;
+
+export const MATCH_TOLERANCE_PCT = 10;
+const pctDiff = (a: number, b: number) => (b === 0 ? (a === 0 ? 0 : 100) : Math.round(((a - b) / Math.abs(b)) * 1000) / 10);
+/** Compares a buyer's test run with the listed (recorded) result, per metric. */
+export function compareMetrics(listed: Metrics, test: Metrics) {
+  const keys = ["netProfit", "profitFactor", "drawdown", "winRate", "totalTrades", "sharpe"] as const;
+  const diffs = keys.map((k) => ({ metric: k, listed: listed[k], test: test[k], diffPct: pctDiff(test[k], listed[k]) }));
+  const core = diffs.filter((d) => d.metric === "netProfit" || d.metric === "profitFactor" || d.metric === "drawdown");
+  return { diffs, matches: core.every((d) => Math.abs(d.diffPct) <= MATCH_TOLERANCE_PCT) };
+}
+export async function compareWithListing(listingId: string, trialRunId: string) {
+  const l = mListings.find((x) => x.id === listingId);
+  const t = trials.find((x) => x.id === trialRunId);
+  if (!l || !t) throw new Error("Test run not found");
+  return compareMetrics(l.metrics, t.metrics);
 }
 
 export async function getBuilderDashboard() {

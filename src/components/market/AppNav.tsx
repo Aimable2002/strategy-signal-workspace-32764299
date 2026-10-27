@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Bell, LineChart, Shield, Wallet } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -72,6 +72,17 @@ function NotificationsBell() {
 
 export function AppNav() {
   const dev = useDevState();
+  const { pathname } = useLocation();
+  if (pathname === "/maintenance") {
+    return (
+      <nav className="flex h-12 shrink-0 items-center border-b bg-sidebar px-3">
+        <Link to="/welcome" className="flex items-center gap-2">
+          <span className="flex h-6 w-6 items-center justify-center rounded bg-primary text-primary-foreground"><LineChart className="h-3.5 w-3.5" /></span>
+          <span className="text-sm font-semibold">Tickforge</span>
+        </Link>
+      </nav>
+    );
+  }
   return (
     <nav className="flex h-12 shrink-0 items-center gap-1 border-b bg-sidebar px-3">
       <Link to={dev.loggedIn ? "/" : "/welcome"} className="mr-3 flex items-center gap-2">

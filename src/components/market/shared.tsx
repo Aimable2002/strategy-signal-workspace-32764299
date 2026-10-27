@@ -1,3 +1,4 @@
+import { Tooltip as UiTooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Link } from "@tanstack/react-router";
 import { Area, AreaChart, CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { AlertTriangle, Info, Star } from "lucide-react";
@@ -178,5 +179,17 @@ export function CardGridSkeleton({ n = 6 }: { n?: number }) {
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {Array.from({ length: n }).map((_, i) => <Skeleton key={i} className="h-80 rounded-lg" />)}
     </div>
+  );
+}
+
+export const PLATFORM_RECORDED_TIP = "Results come from a backtest run in the builder's workspace. They are historical simulations and do not guarantee future performance.";
+export function PlatformRecorded() {
+  return (
+    <TooltipProvider delayDuration={150}>
+      <UiTooltip>
+        <TooltipTrigger asChild><span tabIndex={0} className="inline-flex cursor-help items-center gap-1 rounded border px-1.5 py-0.5 text-[11px] text-muted-foreground"><Info className="h-3 w-3" /> Platform-recorded</span></TooltipTrigger>
+        <TooltipContent className="max-w-xs">{PLATFORM_RECORDED_TIP}</TooltipContent>
+      </UiTooltip>
+    </TooltipProvider>
   );
 }

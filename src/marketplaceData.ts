@@ -190,3 +190,40 @@ export const reviewQueue = [
   { ...listings[1], id: "q2", title: "Night Owl Scalper", builderId: "b2", symbol: "EURUSD", timeframe: "M5", style: "Scalping" as Style, price: 89, submittedAt: "2026-10-25", status: "In review" as ListingStatus, equity: makeCurve(42, 10000, -310, 17.2), metrics: { netProfit: -310, profitFactor: 0.96, drawdown: 17.2, winRate: 58, totalTrades: 940, sharpe: -0.08 } },
   { ...listings[2], id: "q3", title: "Ranging Yen Fader", builderId: "b3", symbol: "USDJPY", timeframe: "H1", style: "Mean reversion" as Style, price: 75, submittedAt: "2026-10-25", status: "In review" as ListingStatus, equity: makeCurve(43, 10000, 1420, 6.8), metrics: { netProfit: 1420, profitFactor: 1.31, drawdown: 6.8, winRate: 56, totalTrades: 204, sharpe: 1.02 } },
 ];
+
+// Backtest records: saved automatically by the backend from the agent's MT5 run (via the MT5 MCP server).
+// Builders never enter or edit these numbers.
+export type BacktestRecordStatus = "passed" | "failed";
+export interface BacktestRecord {
+  id: string;
+  strategyId: string;
+  version: string;
+  status: BacktestRecordStatus;
+  createdAt: string;
+  settings: TrialSettings;
+  testedOnBroker: string;
+  compileResult: { errors: number; warnings: number };
+  metrics: Metrics;
+  equitySeries: EquityPoint[];
+  trades: number;
+  reportUrl: string;
+}
+
+function rec(strategyId: string, version: string, status: BacktestRecordStatus, symbol: string, timeframe: string, m: Metrics, seed: number, createdAt: string): BacktestRecord {
+  return {
+    id: `rec-${strategyId}-${version}`, strategyId, version, status, createdAt,
+    settings: { symbol, timeframe, from: "2023-01-01", to: "2024-12-31", deposit: 10000 },
+    testedOnBroker: "IC Markets",
+    compileResult: status === "passed" ? { errors: 0, warnings: 0 } : { errors: 3, warnings: 1 },
+    metrics: m, equitySeries: makeCurve(seed, 10000, m.netProfit, m.drawdown), trades: m.totalTrades,
+    reportUrl: `/reports/${strategyId}_${version}.html`,
+  };
+}
+const zero: Metrics = { netProfit: 0, profitFactor: 0, drawdown: 0, winRate: 0, totalTrades: 0, sharpe: 0 };
+export const backtestRecords: BacktestRecord[] = [
+  rec("s1", "v1", "failed", "EURUSD", "H1", zero, 61, "2026-10-25 21:04"),
+  rec("s1", "v2", "passed", "EURUSD", "H1", { netProfit: 1860, profitFactor: 1.18, drawdown: 11.2, winRate: 44, totalTrades: 231, sharpe: 0.82 }, 62, "2026-10-25 22:18"),
+  rec("s1", "v3", "passed", "EURUSD", "H1", { netProfit: 3412, profitFactor: 1.61, drawdown: 8.1, winRate: 47, totalTrades: 243, sharpe: 1.34 }, 63, "2026-10-26 00:41"),
+  rec("s2", "v1", "passed", "XAUUSD", "M15", { netProfit: 2210, profitFactor: 1.32, drawdown: 12.5, winRate: 52, totalTrades: 610, sharpe: 0.97 }, 64, "2026-10-20 14:10"),
+  rec("s2", "v2", "failed", "XAUUSD", "M15", zero, 65, "2026-10-22 09:30"),
+];

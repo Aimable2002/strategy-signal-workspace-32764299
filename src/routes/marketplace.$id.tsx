@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { BadgeCheck, Loader2, Lock, Play } from "lucide-react";
+import { BadgeCheck, CheckCircle2, Loader2, Lock, Play, RotateCcw, XCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { BuilderAvatar, EquityChart, ErrorState, MetricGrid, Page, RiskDisclosure, Stars, money } from "@/components/market/shared";
+import { BuilderAvatar, EquityChart, ErrorState, MetricGrid, Page, PlatformRecorded, RiskDisclosure, Stars, money } from "@/components/market/shared";
 import * as api from "@/services/api";
 import { SYMBOLS, TIMEFRAMES, type TrialResult, type TrialSettings } from "@/mockData";
 import { meta } from "@/lib/meta";
@@ -54,6 +54,7 @@ function Detail() {
       </div>
 
       <section className="mt-6 rounded-lg border bg-card p-4">
+        <div className="mb-2 flex items-center justify-between gap-2"><h2 className="text-sm font-semibold">Listed result</h2><PlatformRecorded /></div>
         <EquityChart series={[{ name: "Listed result", data: l.equity, color: "var(--color-primary)" }]} />
         <p className="mt-2 font-mono text-xs text-muted-foreground">{l.symbol} · {l.timeframe} · {l.period.from} to {l.period.to} · Deposit {money(l.deposit)} · Tested on: {l.broker}</p>
       </section>
@@ -120,6 +121,8 @@ function TrialPanel({ listing }: { listing: Detail }) {
   const [left, setLeft] = useState<number | null>(null);
   const [progress, setProgress] = useState<number | null>(null);
   const [result, setResult] = useState<TrialResult | null>(null);
+  const [cmp, setCmp] = useState<Awaited<ReturnType<typeof api.compareWithListing>> | null>(null);
+  const listed: TrialSettings = { symbol: listing.symbol, timeframe: listing.timeframe, from: listing.period.from, to: listing.period.to, deposit: listing.deposit };
   const [error, setError] = useState<string | null>(null);
   useEffect(() => { api.getTrialsRemaining(listing.id).then(setLeft); }, [listing.id]);
 
@@ -128,6 +131,7 @@ function TrialPanel({ listing }: { listing: Detail }) {
     try {
       const r = await api.runTrialBacktest(listing.id, s, setProgress);
       setResult(r);
+      setCmp(await api.compareWithListing(listing.id, r.id));
     } catch (e) { setError((e as Error).message); }
     setProgress(null);
     setLeft(await api.getTrialsRemaining(listing.id));
@@ -141,7 +145,7 @@ function TrialPanel({ listing }: { listing: Detail }) {
   return (
     <section className="mt-8 rounded-lg border border-primary/30 bg-panel p-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="font-semibold">Test this strategy</h2>
+        <div><h2 className="font-semibold">Test this strategy</h2><p className="text-sm text-primary">Don't trust our numbers. Run the test yourself before you buy.</p></div>
         {left != null && <Badge variant="outline">{left} of {api.TRIAL_LIMIT} free test runs left today</Badge>}
       </div>
       <p className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground"><Lock className="h-3.5 w-3.5" /> You see results only. Strategy files are available after purchase.</p>
@@ -156,6 +160,7 @@ function TrialPanel({ listing }: { listing: Detail }) {
         <div className="space-y-1"><Label className="text-xs">Initial deposit ($)</Label><Input type="number" min={100} value={s.deposit} onChange={(e) => setS({ ...s, deposit: Number(e.target.value) })} /></div>
       </div>
       <div className="mt-4 flex flex-wrap items-center gap-3">
+        <Button variant="outline" onClick={() => setS(listed)} disabled={busy}><RotateCcw className="h-4 w-4" /> Reproduce the listed result</Button>
         <Button onClick={run} disabled={busy || invalid || !dev.loggedIn}>{busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Play className="h-4 w-4" />} Run backtest{left === 0 ? ` · ~$${cost.toFixed(2)}` : " · free"}</Button>
         {!dev.loggedIn && <span className="text-xs text-muted-foreground"><Link to="/login" className="text-primary underline">Log in</Link> to test this strategy.</span>}
         {invalid && <span className="text-xs text-loss">Check the dates and use a deposit of at least $100.</span>}
@@ -164,13 +169,43 @@ function TrialPanel({ listing }: { listing: Detail }) {
       {error && <p className="mt-3 text-sm text-loss">{error}</p>}
       {result && !busy && (
         <div className="mt-5 space-y-4">
+          {cmp && (
+            <div className={cmp.matches ? "flex items-center gap-2 rounded-md border border-profit/40 bg-profit/5 p-3 text-sm text-profit" : "flex items-center gap-2 rounded-md border border-warning/40 bg-warning/5 p-3 text-sm text-warning"}>
+              {cmp.matches ? <CheckCircle2 className="h-4 w-4" /> : <XCircle className="h-4 w-4" />}
+              {cmp.matches ? "Matches the listing" : "Differs from the listing"}
+              <span className="text-xs text-muted-foreground">(net profit, profit factor and drawdown within {api.MATCH_TOLERANCE_PCT}%)</span>
+            </div>
+          )}
           <div className="rounded-md border bg-card p-3">
             <EquityChart height={260} series={[{ name: "Listed result", data: listing.equity, color: "var(--color-muted-foreground)" }, { name: "Your test", data: result.equity, color: "var(--color-primary)" }]} />
             <p className="mt-1 font-mono text-xs text-muted-foreground">Your test: {result.settings.symbol} · {result.settings.timeframe} · {result.settings.from} to {result.settings.to} · Deposit {money(result.settings.deposit)}</p>
           </div>
-          <MetricGrid metrics={result.metrics} compare={listing.metrics} />
+          {cmp && (
+            <div className="overflow-x-auto rounded-md border bg-card">
+              <table className="w-full text-sm">
+                <thead><tr className="border-b text-left text-xs text-muted-foreground"><th className="px-3 py-2">Metric</th><th className="px-3 py-2 text-right">Listed</th><th className="px-3 py-2 text-right">Your test</th><th className="px-3 py-2 text-right">Difference</th></tr></thead>
+                <tbody>
+                  {cmp.diffs.map((d) => (
+                    <tr key={d.metric} className="border-b last:border-0">
+                      <td className="px-3 py-2">{METRIC_LABELS[d.metric]}</td>
+                      <td className="px-3 py-2 text-right font-mono">{fmtMetric(d.metric, d.listed)}</td>
+                      <td className="px-3 py-2 text-right font-mono">{fmtMetric(d.metric, d.test)}</td>
+                      <td className={Math.abs(d.diffPct) <= api.MATCH_TOLERANCE_PCT ? "px-3 py-2 text-right font-mono text-profit" : "px-3 py-2 text-right font-mono text-warning"}>{d.diffPct > 0 ? "+" : ""}{d.diffPct}%</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       )}
     </section>
   );
+}
+
+const METRIC_LABELS: Record<string, string> = { netProfit: "Net profit", profitFactor: "Profit factor", drawdown: "Max drawdown", winRate: "Win rate", totalTrades: "Total trades", sharpe: "Sharpe ratio" };
+function fmtMetric(k: string, v: number) {
+  if (k === "netProfit") return money(v);
+  if (k === "drawdown" || k === "winRate") return `${v}%`;
+  return String(v);
 }

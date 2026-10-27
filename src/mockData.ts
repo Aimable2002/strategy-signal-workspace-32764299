@@ -28,21 +28,6 @@ export interface Message {
   working?: { label: string; progress: number };
 }
 
-export interface EquityPoint {
-  i: number;
-  equity: number;
-}
-
-export interface Trade {
-  time: string;
-  symbol: string;
-  side: "Buy" | "Sell";
-  size: number;
-  entry: number;
-  exit: number;
-  pnl: number;
-}
-
 export interface BacktestRun {
   id: string;
   version: string;
@@ -54,8 +39,6 @@ export interface BacktestRun {
   winRate: number;
   totalTrades: number;
   sharpe: number;
-  equity: EquityPoint[];
-  trades: Trade[];
   settings: string;
 }
 
@@ -78,43 +61,6 @@ function seeded(seed: number) {
     s = (s * 16807) % 2147483647;
     return (s - 1) / 2147483646;
   };
-}
-
-export function makeEquity(seed: number, drift = 18, n = 200): EquityPoint[] {
-  const r = seeded(seed);
-  let eq = 10000;
-  const pts: EquityPoint[] = [];
-  for (let i = 0; i < n; i++) {
-    const shock = (r() - 0.47) * 160;
-    const dd = r() < 0.04 ? -(r() * 420) : 0;
-    eq = Math.max(7000, eq + drift + shock + dd);
-    pts.push({ i, equity: Math.round(eq * 100) / 100 });
-  }
-  return pts;
-}
-
-export function makeTrades(seed: number): Trade[] {
-  const r = seeded(seed);
-  const out: Trade[] = [];
-  for (let k = 0; k < 10; k++) {
-    const side = r() > 0.5 ? "Buy" : "Sell";
-    const entry = 1.08 + r() * 0.03;
-    const move = (r() - 0.42) * 0.006;
-    const exit = side === "Buy" ? entry + move : entry - move;
-    const size = [0.1, 0.2, 0.5][Math.floor(r() * 3)] ?? 0.1;
-    const pnl = Math.round(move * size * 100000 * 100) / 100;
-    const day = 31 - k * 2;
-    out.push({
-      time: `2024-12-${String(Math.max(day, 1)).padStart(2, "0")} ${String(8 + Math.floor(r() * 10)).padStart(2, "0")}:00`,
-      symbol: "EURUSD",
-      side,
-      size,
-      entry: +entry.toFixed(5),
-      exit: +exit.toFixed(5),
-      pnl,
-    });
-  }
-  return out;
 }
 
 export const SETTINGS_LINE =
@@ -185,28 +131,18 @@ const versionMeta: Record<string, { changes: string; seed: number; drift: number
 
 export function buildRun(version: string, idx: number): BacktestRun {
   const m = versionMeta[version] ?? { changes: "Parameter tweak", seed: 100 + idx * 7, drift: 10 + (idx % 5) * 3, date: new Date().toISOString().slice(0, 16).replace("T", " ") };
-  const equity = makeEquity(m.seed, m.drift);
-  const final = equity[equity.length - 1]!.equity;
-  let peak = 0;
-  let maxDd = 0;
-  for (const p of equity) {
-    peak = Math.max(peak, p.equity);
-    maxDd = Math.max(maxDd, (peak - p.equity) / peak);
-  }
   const r = seeded(m.seed + 3);
   return {
     id: `run-${version}-${idx}`,
     version,
     date: m.date,
     changes: m.changes,
-    netProfit: Math.round((final - 10000) * 100) / 100,
-    drawdown: Math.round(maxDd * 1000) / 10,
+    netProfit: Math.round((m.drift * 190 + r() * 600 - 150) * 100) / 100,
+    drawdown: Math.round((5 + (30 - m.drift) / 3 + r() * 3) * 10) / 10,
     profitFactor: Math.round((1 + m.drift / 30 + r() * 0.2) * 100) / 100,
     winRate: Math.round((42 + m.drift / 2 + r() * 6) * 10) / 10,
     totalTrades: 180 + Math.floor(r() * 120),
     sharpe: Math.round((0.4 + m.drift / 20 + r() * 0.3) * 100) / 100,
-    equity,
-    trades: makeTrades(m.seed),
     settings: SETTINGS_LINE,
   };
 }
@@ -283,7 +219,6 @@ export const fileTree = [
   { name: "EMA_Cross.mq5", type: "mq5" as const },
   { name: "EMA_Cross.ex5", type: "ex5" as const },
   { name: "parameters.set", type: "set" as const },
-  { name: "reports/", type: "dir" as const, children: ["report_v1.html", "report_v2.html", "report_v3.html"] },
 ];
 
 export const parametersSet = `FastPeriod=12
@@ -309,7 +244,7 @@ export const terminalLogs = [
   "  Tester: 2023.01.01 — 2024.12.31 generating ticks…",
   "  Tester: progress 25%… 50%… 75%… 100%",
   "  Tester: 243 trades · net profit 3412.18 · PF 1.61 · DD 8.1%",
-  "  Report saved: reports/report_v3.html",
+  "  Backtest summary saved (v3).",
   "$ _",
 ];
 

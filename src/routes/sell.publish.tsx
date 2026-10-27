@@ -8,7 +8,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
-import { EquityChart, ListingCard, MetricGrid, Page, PlatformRecorded } from "@/components/market/shared";
+import { ListingCard, MetricGrid, Page, PlatformRecorded } from "@/components/market/shared";
 import * as api from "@/services/api";
 import { builders, listings, myBuilderId, STYLES, type BacktestRecord, type Style } from "@/mockData";
 import { meta } from "@/lib/meta";
@@ -110,7 +110,6 @@ function Publish() {
                   : record.status !== "passed" ? <p className="text-sm text-loss">The backtest for {version} did not pass ({record.compileResult.errors} compile errors). Fix it in your workspace and run a new backtest to publish.</p>
                   : (
                     <>
-                      <EquityChart height={180} series={[{ name: "Recorded result", data: record.equitySeries, color: "var(--color-primary)" }]} />
                       <p className="font-mono text-xs text-muted-foreground">{record.settings.symbol} · {record.settings.timeframe} · {record.settings.from} to {record.settings.to} · Deposit ${record.settings.deposit.toLocaleString()} · Tested on: {record.testedOnBroker} · {record.createdAt}</p>
                       <MetricGrid metrics={record.metrics} />
                     </>
@@ -168,7 +167,7 @@ function Publish() {
           <>
             <h2 className="font-semibold">Review and submit</h2>
             <p className="text-xs text-muted-foreground">{chosen?.title} · {version} · {license === "source" ? `.ex5 $${d.price} / with .mq5 $${sourcePrice}` : `.ex5 only $${d.price}`}</p>
-            <div className="max-w-sm"><ListingCard listing={record ? { ...preview, equity: record.equitySeries, metrics: record.metrics, broker: record.testedOnBroker } : preview} preview /></div>
+            <div className="max-w-sm"><ListingCard listing={record ? { ...preview, metrics: record.metrics, broker: record.testedOnBroker } : preview} preview /></div>
             {submitError && <p className="text-sm text-loss">{submitError}</p>}
           </>
         )}

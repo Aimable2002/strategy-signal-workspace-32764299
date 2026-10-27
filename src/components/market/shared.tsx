@@ -1,12 +1,11 @@
 import { Tooltip as UiTooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Link } from "@tanstack/react-router";
-import { Area, AreaChart, CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { AlertTriangle, Info, Star } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { Builder, EquityPoint, Listing, Metrics } from "@/mockData";
+import type { Builder, Listing, Metrics } from "@/mockData";
 import { cn } from "@/lib/utils";
 import { FavoriteButton } from "./extras";
 
@@ -81,38 +80,6 @@ export function BuilderAvatar({ builder, size = "sm" }: { builder: Builder; size
   );
 }
 
-export function Sparkline({ data, positive }: { data: EquityPoint[]; positive: boolean }) {
-  const color = positive ? "var(--color-profit)" : "var(--color-loss)";
-  return (
-    <div className="h-14 w-full">
-      <ResponsiveContainer>
-        <AreaChart data={data} margin={{ top: 2, bottom: 2, left: 0, right: 0 }}>
-          <YAxis hide domain={["dataMin", "dataMax"]} />
-          <Area dataKey="equity" stroke={color} fill={color} fillOpacity={0.12} strokeWidth={1.5} dot={false} isAnimationActive={false} />
-        </AreaChart>
-      </ResponsiveContainer>
-    </div>
-  );
-}
-
-export function EquityChart({ series, height = 300 }: { series: { name: string; data: EquityPoint[]; color: string }[]; height?: number }) {
-  const rows = series[0]!.data.map((p, i) => Object.fromEntries([["i", p.i], ...series.map((s) => [s.name, s.data[i]?.equity])]));
-  return (
-    <div style={{ height }} className="w-full">
-      <ResponsiveContainer>
-        <LineChart data={rows} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
-          <CartesianGrid stroke="var(--color-border)" strokeDasharray="3 3" />
-          <XAxis dataKey="i" hide />
-          <YAxis domain={["auto", "auto"]} tick={{ fill: "var(--color-muted-foreground)", fontSize: 11 }} tickFormatter={(v) => `$${(v / 1000).toFixed(1)}k`} width={52} />
-          <Tooltip contentStyle={{ background: "var(--color-popover)", border: "1px solid var(--color-border)", fontSize: 12 }} formatter={(v: number) => money(v)} labelFormatter={() => ""} />
-          {series.length > 1 && <Legend wrapperStyle={{ fontSize: 12 }} />}
-          {series.map((s) => <Line key={s.name} dataKey={s.name} stroke={s.color} strokeWidth={2} dot={false} isAnimationActive={false} />)}
-        </LineChart>
-      </ResponsiveContainer>
-    </div>
-  );
-}
-
 export const METRIC_DEFS: { key: keyof Metrics; label: string; fmt: (m: Metrics) => string; tone?: (m: Metrics) => string }[] = [
   { key: "netProfit", label: "Net profit", fmt: (m) => money(m.netProfit), tone: (m) => (m.netProfit >= 0 ? "text-profit" : "text-loss") },
   { key: "profitFactor", label: "Profit factor", fmt: (m) => m.profitFactor.toFixed(2) },
@@ -149,7 +116,6 @@ export function ListingCard({ listing, preview }: { listing: ListingWithBuilder;
       <div className="mt-1.5 flex items-center gap-2 text-xs text-muted-foreground">
         <BuilderAvatar builder={listing.builder} /> {listing.builder.name}
       </div>
-      <div className="mt-3"><Sparkline data={listing.equity} positive={m.netProfit >= 0} /></div>
       <div className="mt-3 grid grid-cols-3 gap-2 text-center">
         {[["Net profit", money(m.netProfit), m.netProfit >= 0 ? "text-profit" : "text-loss"], ["Max DD", `${m.drawdown}%`, "text-loss"], ["Win rate", `${m.winRate}%`, ""]].map(([l, v, c]) => (
           <div key={l} className="rounded bg-muted px-1 py-1.5">

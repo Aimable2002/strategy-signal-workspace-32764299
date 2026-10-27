@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Bot, FileCode2, FlaskConical, Lock, MessageSquareText, Server, Upload } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { CardGridSkeleton, EquityChart, ErrorState, ListingCard, type ListingWithBuilder } from "@/components/market/shared";
+import { CardGridSkeleton, ErrorState, MetricGrid, ListingCard, type ListingWithBuilder } from "@/components/market/shared";
 import * as api from "@/services/api";
 import { listings } from "@/mockData";
 import { meta } from "@/lib/meta";
@@ -41,7 +41,7 @@ function Landing() {
         <div>
           <p className="font-mono text-xs uppercase tracking-widest text-primary">MetaTrader 5 · AI agent</p>
           <h1 className="mt-3 text-4xl font-semibold leading-tight tracking-tight sm:text-5xl">Build and backtest trading strategies with an AI agent</h1>
-          <p className="mt-4 max-w-lg text-muted-foreground">From idea to compiled Expert Advisor and a full Strategy Tester report in minutes. Keep it, or sell it on the marketplace.</p>
+          <p className="mt-4 max-w-lg text-muted-foreground">From idea to compiled Expert Advisor and a Strategy Tester summary in minutes. Keep it, or sell it on the marketplace.</p>
           <div className="mt-7 flex flex-wrap gap-3">
             <Button size="lg" asChild><Link to="/signup">Start with $5 free credit</Link></Button>
             <Button size="lg" variant="outline" asChild><Link to="/marketplace">Browse strategies</Link></Button>
@@ -50,7 +50,8 @@ function Landing() {
         </div>
         <div className="rounded-xl border bg-card p-4 shadow-2xl">
           <div className="mb-2 flex justify-between font-mono text-xs text-muted-foreground"><span>EMA_Cross.ex5 · EURUSD H1</span><span className="text-profit">+$3,412</span></div>
-          <EquityChart height={260} series={[{ name: "Equity", data: listings[11]!.equity, color: "var(--color-primary)" }]} />
+          <MetricGrid metrics={listings[11]!.metrics} />
+          <p className="mt-3 font-mono text-[11px] text-muted-foreground">EURUSD · H1 · 2023-01-01 to 2024-12-31 · Deposit $10,000</p>
         </div>
       </section>
 

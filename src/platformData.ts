@@ -83,15 +83,48 @@ export const helpCategories = [
   { slug: "credits", title: "Credits and billing", blurb: "Rates, top-ups, spending limits and invoices." },
 ];
 
-export const helpArticles = [
-  { slug: "first-strategy", category: "getting-started", title: "Build your first strategy", summary: "Describe an idea and let the agent write, compile and backtest it." },
-  { slug: "credits-run-out", category: "credits", title: "What happens when credits run out", summary: "Your workspace stops and files are kept for 30 days." },
-  { slug: "stop-vs-archive", category: "workspace", title: "Stop vs. archive a workspace", summary: "Stopped workspaces still pay storage; archived ones pay less." },
-  { slug: "tester-settings", category: "backtesting", title: "Strategy Tester settings explained", summary: "Modelling quality, spreads, and date ranges." },
-  { slug: "publish-listing", category: "selling", title: "Publish a listing", summary: "Connect a demo account, set a price and submit for review." },
-  { slug: "test-before-buy", category: "buying", title: "Testing a strategy before you buy", summary: "Free daily test runs and what you can see." },
-  { slug: "refunds", category: "buying", title: "Requesting a refund", summary: "When refunds are possible and how disputes work." },
-  { slug: "no-commission", category: "selling", title: "How builders get paid", summary: "You keep 100% of the sale price minus payment processing fees." },
+export type HelpSection = { h: string; p: string };
+export const helpArticles: { slug: string; category: string; title: string; summary: string; body: HelpSection[] }[] = [
+  { slug: "first-strategy", category: "getting-started", title: "Build your first strategy", summary: "Describe an idea and let the agent write, compile and backtest it.", body: [
+    { h: "Describe the idea", p: "Open your workspace and tell the agent your entry, exit and risk rules in plain words. For example: buy when the 20 EMA crosses above the 50 EMA on EURUSD H1, stop loss 40 pips." },
+    { h: "Let the agent build it", p: "The agent writes the .mq5 source, compiles it to an .ex5 file and runs the MT5 Strategy Tester. You can watch each step in the chat and the Terminal tab." },
+    { h: "Read the results", p: "Open the Results tab for the equity curve and key numbers. Ask the agent to change a rule, add a stop loss or test another pair, then compare runs in the Runs tab." },
+  ]},
+  { slug: "credits-run-out", category: "credits", title: "What happens when credits run out", summary: "Your workspace stops and files are kept for 30 days.", body: [
+    { h: "Low balance warning", p: "When your balance falls below $2.00 you see a banner in the workspace and a notification. Add credits any time from Billing." },
+    { h: "At zero", p: "Your workspace stops and you cannot start a new one. Nothing is deleted: your files are kept for 30 days." },
+    { h: "Getting back to work", p: "Add credits and start the workspace again. Turn on auto top-up in Billing if you never want to be interrupted." },
+  ]},
+  { slug: "stop-vs-archive", category: "workspace", title: "Stop vs. archive a workspace", summary: "Stopped workspaces still pay storage; archived ones pay less.", body: [
+    { h: "Stopped", p: "A stopped workspace keeps its files and starts again quickly. You pay no running charge, only the storage rate shown on the Pricing page." },
+    { h: "Archived", p: "An archived workspace is moved to cheaper storage. It costs less to keep, but takes longer to start again." },
+    { h: "Deleted", p: "Deleting a workspace removes it and its files permanently, and stops all charges for it." },
+  ]},
+  { slug: "tester-settings", category: "backtesting", title: "Strategy Tester settings explained", summary: "Modelling quality, spreads, and date ranges.", body: [
+    { h: "Modelling quality", p: "Every tick is the most detailed and the slowest. 1-minute OHLC is faster and close enough for most strategies. Open prices only is the quickest and suits strategies that act once per bar." },
+    { h: "Spread and costs", p: "A low spread makes results look better than real trading. Use a realistic spread for the pair you are testing." },
+    { h: "Date range", p: "Test across several years and market conditions. A short period that happens to suit the strategy tells you little." },
+  ]},
+  { slug: "publish-listing", category: "selling", title: "Publish a listing", summary: "Connect a demo account, set a price and submit for review.", body: [
+    { h: "Pick a version", p: "Only versions with a passed, saved backtest can be published. The results on your listing come from that backtest. You cannot edit them." },
+    { h: "Connect a demo account", p: "Buyers' test runs use your MT5 demo account. Use an investor (read-only) password. Your login is stored encrypted and is never shown to buyers." },
+    { h: "Describe and price it", p: "Write a title and description, choose tags and set a price. Decide whether buyers get only the .ex5 or the .mq5 source too. Then submit for review." },
+  ]},
+  { slug: "test-before-buy", category: "buying", title: "Testing a strategy before you buy", summary: "Free daily test runs and what you can see.", body: [
+    { h: "Run your own test", p: "On a strategy page, change the symbol, dates or deposit and run a backtest. Use Reproduce the listed result to check that the numbers match the listing." },
+    { h: "What you see", p: "You see results only: the equity curve, key numbers and trades. The strategy files are available after you buy." },
+    { h: "Cost", p: "You get a few free test runs each day. Extra runs cost a small amount from your credits, shown before you start." },
+  ]},
+  { slug: "refunds", category: "buying", title: "Requesting a refund", summary: "When refunds are possible and how disputes work.", body: [
+    { h: "When you can get a refund", p: "You can request a full refund within 14 days if you have not downloaded the files. After a download, refunds are reviewed case by case." },
+    { h: "How to ask", p: "Go to Orders, choose the purchase and select Request a refund. Tell us what went wrong." },
+    { h: "What happens next", p: "The builder can respond, and our team reviews the case. You can follow its status on the same page." },
+  ]},
+  { slug: "no-commission", category: "selling", title: "How builders get paid", summary: "You keep 100% of the sale price minus payment processing fees.", body: [
+    { h: "No commission", p: "The platform takes no commission on sales. You keep 100% of the sale price, minus the payment processing fee." },
+    { h: "Example", p: "A $50.00 sale with a $1.75 processing fee pays you $48.25." },
+    { h: "Payouts", p: "Set up your payout details and complete verification in Payout setup. Approved payouts are sent on the payout schedule." },
+  ]},
 ];
 
 export const adminUsers = [
@@ -117,9 +150,9 @@ export const disputes: { id: string; orderId: string; listing: string; buyer: st
 ];
 
 export const pendingPayouts = [
-  { id: "po1", builder: "Lena Kovač", amount: 2186.4, period: "Oct 2026", method: "Bank ••12" },
-  { id: "po2", builder: "Marcus Oyelaran", amount: 1420.75, period: "Oct 2026", method: "Wise" },
-  { id: "po3", builder: "Yuki Tanaka", amount: 312.1, period: "Oct 2026", method: "Bank ••88" },
+  { id: "po1", builder: "Lena Kovač", amount: 2186.4, period: "Oct 2026", method: "Bank ••12", verified: true },
+  { id: "po2", builder: "Marcus Oyelaran", amount: 1420.75, period: "Oct 2026", method: "Wise", verified: true },
+  { id: "po3", builder: "Yuki Tanaka", amount: 312.1, period: "Oct 2026", method: "Bank ••88", verified: false },
 ];
 
 export const costMonitor = {

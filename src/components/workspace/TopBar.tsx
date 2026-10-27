@@ -50,7 +50,7 @@ export function TopBar({ status, startedAt, onStart, onStop, onDelete, credit, o
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>Delete this workspace?</AlertDialogTitle>
-              <AlertDialogDescription>All strategies, compiled files, backtest reports and history in this workspace will be permanently removed. This cannot be undone.</AlertDialogDescription>
+              <AlertDialogDescription>All strategies, compiled files, backtest summaries and history in this workspace will be permanently removed. This cannot be undone.</AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
